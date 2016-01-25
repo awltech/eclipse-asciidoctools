@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+<extension point="org.eclipse.ui.menus">
+         <menuContribution
+               locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+            <menu
+                  id="com.worldline.asciidoctools.menu.packageexplorer"
+                  label="Asciidoc Tools">
+               <command
+                     commandId="com.worldline.scaffold.asciidoc.core.command"
+                     label="Add Asciidoc capability on current project"
+                     tooltip="Add Asciidoc capability on current project">
+                  <visibleWhen>
+                     <iterate
+                           operator="or">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                        </adapt>
+                        <test
+                              property="org.eclipse.core.resources.projectNature"
+                              value="org.eclipse.m2e.core.maven2Nature">
+                        </test>
+                     </iterate>
+                  </visibleWhen>
+               </command>
+            </menu>
+         </menuContribution>
+       <menuContribution
+         locationURI=
+         "popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+         <menu
+               id="com.worldline.asciidoctools.menu.projectexplorer"
+               label="Asciidoc Tools">
+            <command
+                  commandId="com.worldline.scaffold.asciidoc.core.command"
+                  label="Add Asciidoc capability on current project"
+                  tooltip="Add Asciidoc capability on current project">
+               <visibleWhen>
+                  <iterate
+                        operator="or">
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="org.eclipse.m2e.core.maven2Nature">
+                     </test>
+                  </iterate>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+         
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.worldline.asciidoctools.scaffold.internal.MavenEnablerHandler"
+            id="com.worldline.scaffold.asciidoc.core.command"
+            name="Enable Asciidoc on Maven project">
+      </command>
+   </extension>
+
+</plugin>

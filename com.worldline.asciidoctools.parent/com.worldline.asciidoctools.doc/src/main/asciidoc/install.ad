@@ -1,0 +1,13 @@
+= Eclipse Asciidoc Tools : Installation Guide
+
+''''
+
+== How can I install it ?
+
+In the Eclipse Update Site browser, just add the following URL: https://kazan.atosworldline.com/share/data/xa/asciidoctools/nightly/site/
+
+It will give you access to the installer of the Eclipse plugin, as shown on the picture below
+
+image:images/img04.png[]
+
+''''

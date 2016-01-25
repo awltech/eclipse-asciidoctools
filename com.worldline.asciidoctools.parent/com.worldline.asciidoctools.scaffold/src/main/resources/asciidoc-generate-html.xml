@@ -1,0 +1,9 @@
+<configuration>
+	<attributes>
+		<stylesheet>${stylesheet.path}</stylesheet>
+	</attributes>
+	<backend>html</backend>
+	<sourceDirectory>${source.asciidoc.sources}</sourceDirectory>
+	<outputDirectory>${target.asciidoc}</outputDirectory>
+	<headerFooter>true</headerFooter>
+</configuration>

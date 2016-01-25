@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.worldline.asciidoctools.editor.internal.AsciidocEditor"
+            default="false"
+            extensions="ad, asciidoc"
+            icon="icons/asciidoc_icon.gif"
+            id="com.worldline.asciidoc.editor.editor1"
+            name="Asciidoc Editor">
+      </editor>
+   </extension>
+
+</plugin>

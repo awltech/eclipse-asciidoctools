@@ -1,0 +1,24 @@
+= Eclipse Asciidoc Tools: Use the Asciidoc Project builder
+
+''''
+
+== What is it about ?
+
+Based on Maven configuration, generating the documentation from the source is done by calling the *maven compile* goal on the project. The aim of this builder is to propose an integrated documentation generation when the source of the document is saved. 
+
+== How to do such ?
+
+At first, you need to have an existing Maven project, where the Asciidoc Capability is enabled. This is required as the builder will rely on the configuration in the pom file, to know where to retrieve the source and where to generate it. If you didn't follow this step, please follow the documentation link:scaffold.html[here]. 
+
+Then, you can enable the feature using right click on the project.
+
+image:images/img02.png[]
+
+This will update the pom.xml file with the Maven's Eclipse plugin configuration and the .project file with the right Builder configuration. When enabled, you should see the construction as soon as there is a file changed in the project.
+
+image:images/img05.png[]
+
+And it's done !
+ 
+
+''''

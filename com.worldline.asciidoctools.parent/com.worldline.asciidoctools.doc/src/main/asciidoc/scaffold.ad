@@ -1,0 +1,35 @@
+= Eclipse Asciidoc Tools: Enable Asciidoc capability on Maven project
+
+''''
+
+== What is it about ?
+
+This document describes how to enable the Asciidoc capability on an existing Maven project. It basically consists in updating the pom.xml configuration and the project structure
+
+== How to do such ?
+
+At first, you need to have an existing maven project. Here, a simple POM project is sufficient as there is no Java requirement in the project (This is even recommended, compared to default "JAR" packaging).
+
+image:images/img01.png[]
+
+Then, you can enable the asciidoc feature from right-clicking on the project.
+
+image:images/img02.png[]
+
+The actions performed here are the following:
+
+* It will update the folder structure of the project, to create source and target dedicated folder
+** Source folder for pages is *src/main/asciidoc*
+** Source folders for resources (images/css/...) are  *src/main/doc-resources/images* and *src/main/doc-resources/css* 
+** Target folder for generated documentation & resources is *target/generated-docs* 
+* It will generate a default CSS and an empty documentation template (_.ad_ file)
+* It will update the pom file with.
+** An ant task that will copy the resources from *src/main/doc-resources* to *target/generated-docs*
+** An Asciidoc Maven plugin documentation to generate pages from *src/main/asciidoc* to *target/generated-docs*
+
+image:images/img03.png[]
+
+From this, the generation of documentation is doable through a simple *mvn compile* goal and all resources are colocalized into the *target/generated-docs* folder! 
+This makes this much more easy to configure from Jenkins, to automatically generate (and why not deploy) the documentation on their corresponding websites.
+
+''''

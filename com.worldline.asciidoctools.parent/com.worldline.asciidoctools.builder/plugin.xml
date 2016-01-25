@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="com.worldline.asciidoctools.builder"
+         name="AsciidocTools Project Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            callOnEmptyDelta="false"
+            hasNature="false"
+            isConfigurable="true"
+            supportsConfigurations="true">
+         <run
+               class="com.worldline.asciidoctools.builder.internal.AsciidocProjectBuilder">
+         </run>
+      </builder>
+   </extension>
+ <extension point="org.eclipse.ui.menus">
+         <menuContribution
+               locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
+            <menu
+                  id="com.worldline.asciidoctools.menu.packageexplorer"
+                  label="Asciidoc Tools">
+               <command
+                     commandId="com.worldline.asciidocbuilder.command"
+                     label="Enable Project Builder on current project"
+                     tooltip="Enable Project Builder on current project">
+                  <visibleWhen>
+                     <iterate
+                           operator="or">
+                        <adapt
+                              type="org.eclipse.core.resources.IProject">
+                        </adapt>
+                        <test
+                              property="org.eclipse.core.resources.projectNature"
+                              value="org.eclipse.m2e.core.maven2Nature">
+                        </test>
+                     </iterate>
+                  </visibleWhen>
+               </command>
+            </menu>
+         </menuContribution>
+       <menuContribution
+         locationURI=
+         "popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
+         <menu
+               id="com.worldline.asciidoctools.menu.projectexplorer"
+               label="Asciidoc Tools">
+            <command
+                  commandId="com.worldline.asciidocbuilder.command"
+                  label="Enable Project Builder on current project"
+                  tooltip="Enable Project Builder on current project">
+               <visibleWhen>
+                  <iterate
+                        operator="or">
+                     <adapt
+                           type="org.eclipse.core.resources.IProject">
+                     </adapt>
+                     <test
+                           property="org.eclipse.core.resources.projectNature"
+                           value="org.eclipse.m2e.core.maven2Nature">
+                     </test>
+                  </iterate>
+               </visibleWhen>
+            </command>
+         </menu>
+      </menuContribution>
+         
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="com.worldline.asciidoctools.builder.internal.AsciidocBuilderEnablerHandler"
+            id="com.worldline.asciidocbuilder.command"
+            name="Enable Asciidoc Project Builder">
+      </command>
+   </extension>
+
+</plugin>

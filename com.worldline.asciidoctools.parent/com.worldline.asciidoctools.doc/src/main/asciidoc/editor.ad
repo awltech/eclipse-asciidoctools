@@ -1,0 +1,25 @@
+= Eclipse Asciidoc Tools: Asciidoc Editor
+
+''''
+
+== What is it about ?
+
+When writing a document, it is always interesting to check the rendering of the document, to ensure the syntax and CSS are as expected.
+
+To help with this, Asciidoc Tools comes with an Editor that proposes a split resizable editor, to have the rendering visible after each file save.
+
+By default, this editor is enabled for files with the following extensions: **.ad** and **.asciidoc**
+
+== How to do such ?
+
+In the Package Explorer/Project Explorer, once the tools are installed, you should see the icon of the source document changed to a "A", as on the screen below:
+
+image:images/img06.png[]
+
+When you see that, just open the file to open the corresponding editor:
+
+image:images/img07.png[]
+
+Here, on the right part of the screen, you should see a slider that will help you change the ratio of the rendering/edition windows and buttons to change the splitting orientation and to reset the rendering editor (in case you follow links for instance).
+
+''''

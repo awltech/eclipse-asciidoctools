@@ -1,0 +1,28 @@
+= Eclipse Asciidoc Tools 
+
+''''
+
+== What is it about ?
+
+AsciiDocTools is a lightweight and independent Eclipse integration for writing documentation with link:http://www.methods.co.nz/asciidoc/[Asciidoc].
+
+It currently brings the basic integration to add Maven-based Asciidoc integration, along with a Project Builder and an ergonomic editor for documentation live rendering.
+
+== Documentation contents:
+
+* link:install.html[Installation Guide]
+* link:scaffold.html[Enable Asciidoc Capability on Maven project]
+* link:builder.html[Enable and use Asciidoc Project Builder]
+* link:editor.html[Use Asciidoc Editor]
+
+== Will this documentation be always up-to-date ?
+
+Yes it will be, because built on Asciidoc ! Indeed, the documentation source code & resources are part of the Eclipse application and the documentation is regenerated and re-deployed as soon as there is a change in the application !
+
+If you are interested in seeing how this is working, please let me know, so I can show you the automatic build & deployment of the Eclipse application's binaries & documentation. 
+
+== Contacts
+
+For any information, remark, feedback, please contact me by mailto:maxence.vanbesien@worldline.com[e-mail]
+
+''''
