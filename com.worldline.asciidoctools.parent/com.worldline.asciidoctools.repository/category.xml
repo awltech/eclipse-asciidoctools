@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
    <feature url="features/com.worldline.asciidoctools.feature_0.1.0.qualifier.jar" id="com.worldline.asciidoctools.feature" version="0.1.0.qualifier">
-      <category name="Eclipse Asciidoc Tools"/>
+      <category name="Asciidoc Tools"/>
    </feature>
-   <category-def name="Eclipse Asciidoc Tools" label="Eclipse Asciidoc Tools"/>
+   <category-def name="Asciidoc Tools" label="Asciidoc Tools"/>
 </site>
