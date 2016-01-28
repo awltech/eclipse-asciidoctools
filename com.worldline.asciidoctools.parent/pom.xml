@@ -116,5 +116,5 @@
 		<module>com.worldline.asciidoctools.doc</module>
 		<module>com.worldline.asciidoctools.repository</module>
 	</modules>
-	<url>https://kazan.atosworldline.com/share/data/xa/asciidoctools/nightly/doc/</url>
+	<url>http://eclipse.worldline.com/documentation/asciidoctools</url>
 </project>
