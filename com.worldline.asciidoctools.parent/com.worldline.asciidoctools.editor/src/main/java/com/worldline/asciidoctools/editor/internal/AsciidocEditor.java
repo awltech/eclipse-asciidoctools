@@ -23,13 +23,18 @@ package com.worldline.asciidoctools.editor.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationAdapter;
+import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -102,6 +107,23 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 
 		super.createPartControl(editionZone);
 		this.browser = new Browser(renderingZone, SWT.NONE);
+		
+		// Listener added to prevent navigation using hyperlinks
+		this.browser.addLocationListener(new LocationAdapter() {
+			@Override
+			public void changing(LocationEvent event) {
+				if (((Browser) event.getSource()).getUrl() != null && !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
+					try {
+						URI realFileURI = new File(getDestinationFile().getLocation().toString()).toURI();
+						URI expectedFileURI = URI.create(event.location);
+						event.doit = realFileURI.getPath().equals(expectedFileURI.getPath());
+					} catch (Exception e) {
+						Activator.getDefault().getLog()
+								.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+					}
+				}
+			}
+		});
 
 		this.horizontalScale = new Scale(background, SWT.HORIZONTAL);
 		this.horizontalScale.setMinimum(5);
@@ -230,8 +252,8 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 				IPath sourcesPath = new Path(configuration.getSourcesPath());
 				IPath targetPath = new Path(configuration.getTargetPath());
 				if (sourcesPath.isPrefixOf(projectRelativePath)) {
-					IPath removeFirstSegments = projectRelativePath.removeFirstSegments(sourcesPath.segmentCount()).removeFileExtension()
-							.addFileExtension(configuration.getBackend());
+					IPath removeFirstSegments = projectRelativePath.removeFirstSegments(sourcesPath.segmentCount())
+							.removeFileExtension().addFileExtension(configuration.getBackend());
 					IFile targetFile = file.getProject().getFolder(targetPath).getFile(removeFirstSegments);
 					return targetFile;
 				}
