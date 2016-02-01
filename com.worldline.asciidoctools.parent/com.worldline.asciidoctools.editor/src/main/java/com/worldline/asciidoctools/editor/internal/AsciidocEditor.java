@@ -107,12 +107,13 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 
 		super.createPartControl(editionZone);
 		this.browser = new Browser(renderingZone, SWT.NONE);
-		
+
 		// Listener added to prevent navigation using hyperlinks
 		this.browser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changing(LocationEvent event) {
-				if (((Browser) event.getSource()).getUrl() != null && !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
+				if (((Browser) event.getSource()).getUrl() != null
+						&& !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
 					try {
 						URI realFileURI = new File(getDestinationFile().getLocation().toString()).toURI();
 						URI expectedFileURI = URI.create(event.location);
@@ -262,11 +263,26 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		return null;
 	}
 
+	private IFile getStyleSheetFile() {
+		if (this.editorInput instanceof IFileEditorInput) {
+			IFileEditorInput input = (IFileEditorInput) this.editorInput;
+			IFile file = input.getFile();
+			AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(file.getProject());
+			if (configuration != null) {
+				IPath targetPath = new Path(configuration.getTargetPath()).append(configuration.getStylesheetPath());
+				return file.getProject().getFile(targetPath);
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void onBuild(IFile file) {
 		IFile targetFile = getDestinationFile();
-		if (targetFile != null && targetFile.equals(file)) {
-			refreshBrowser(targetFile);
+		if (targetFile != null) {
+			if (targetFile.equals(file) || getStyleSheetFile().equals(file)) {
+				refreshBrowser(targetFile);
+			}
 		}
 	}
 }

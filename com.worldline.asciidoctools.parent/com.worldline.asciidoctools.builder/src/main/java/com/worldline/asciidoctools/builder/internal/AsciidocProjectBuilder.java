@@ -136,7 +136,11 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 						mkdirs((IFolder) destinationFile.getParent());
 					}
 					monitor.subTask("Copying resource " + destinationFile.getName() + " to target...");
+					if (destinationFile.exists()) {
+						destinationFile.delete(true, new NullProgressMonitor());
+					}
 					resourceFile.copy(destinationFile.getFullPath(), true, new NullProgressMonitor());
+					AsciidocBuilderListeners.INSTANCE.notifyBuild(destinationFile);
 				} catch (CoreException e) {
 					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
 				}
