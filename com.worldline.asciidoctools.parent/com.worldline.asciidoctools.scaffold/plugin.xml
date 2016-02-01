@@ -5,6 +5,7 @@
          <menuContribution
                locationURI="popup:org.eclipse.jdt.ui.PackageExplorer">
             <menu
+                  icon="icons/asciidoc_logo.png"
                   id="com.worldline.asciidoctools.menu.packageexplorer"
                   label="Asciidoc Tools">
                <command
@@ -30,6 +31,7 @@
          locationURI=
          "popup:org.eclipse.ui.navigator.ProjectExplorer#PopupMenu?after=additions">
          <menu
+               icon="icons/asciidoc_logo.png"
                id="com.worldline.asciidoctools.menu.projectexplorer"
                label="Asciidoc Tools">
             <command
