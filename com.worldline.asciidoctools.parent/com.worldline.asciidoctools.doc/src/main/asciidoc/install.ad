@@ -4,7 +4,7 @@
 
 == How can I install it ?
 
-In the Eclipse Update Site browser, just add the following URL: https://kazan.atosworldline.com/share/data/xa/asciidoctools/nightly/site/
+In the Eclipse Update Site browser, just add the following URL: http://eclipse.worldline.com/nightly/asciidoctools/ for nightly updates and http://eclipse.worldline.com/releases/asciidoctools/0.1.0/ for the first release.
 
 It will give you access to the installer of the Eclipse plugin, as shown on the picture below
 

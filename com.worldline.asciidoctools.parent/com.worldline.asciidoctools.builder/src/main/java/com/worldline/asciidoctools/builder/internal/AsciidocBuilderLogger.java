@@ -48,7 +48,7 @@ public class AsciidocBuilderLogger {
 	private static int getLoggerLevel() {
 		boolean contains = Activator.getDefault().getPreferenceStore().contains(LOGGER_LEVEL);
 		if (!contains) {
-			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, IStatus.WARNING);
+			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, IStatus.INFO);
 		}
 		return Activator.getDefault().getPreferenceStore().getInt(LOGGER_LEVEL);
 	}
