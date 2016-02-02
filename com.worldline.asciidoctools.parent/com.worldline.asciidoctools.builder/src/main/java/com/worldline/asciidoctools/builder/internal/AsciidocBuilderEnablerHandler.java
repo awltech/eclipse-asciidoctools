@@ -25,7 +25,6 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.viewers.ISelection;
@@ -58,7 +57,7 @@ public class AsciidocBuilderEnablerHandler extends AbstractHandler {
 		}
 
 		if (project == null) {
-			return new Status(IStatus.CANCEL, Activator.PLUGIN_ID, "Project could not be resolved");
+			AsciidocBuilderLogger.cancel("Project could not be resolved.");
 		}
 
 		// Trigger job for modification

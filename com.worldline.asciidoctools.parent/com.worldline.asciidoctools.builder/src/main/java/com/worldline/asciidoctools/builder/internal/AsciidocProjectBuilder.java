@@ -28,6 +28,7 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Set;
 
+import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.AttributesBuilder;
 import org.asciidoctor.OptionsBuilder;
 import org.eclipse.core.resources.IContainer;
@@ -60,11 +61,11 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
-		
+
 		if (AsciidocInstance.INSTANCE.getAsciidoctor() == null) {
 			return new IProject[0];
 		}
-		
+
 		try {
 			AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(getProject());
 			return kind == IncrementalProjectBuilder.FULL_BUILD ? fullBuild(configuration, monitor) : incrementalBuild(configuration, monitor);
@@ -95,7 +96,8 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 		return new IProject[0];
 	}
 
-	private void generate(IFolder sourcesFolder, Set<IFile> sourceFiles, IFolder targetFolder, AsciidocConfiguration configuration, IProgressMonitor monitor) {
+	private void generate(IFolder sourcesFolder, Set<IFile> sourceFiles, IFolder targetFolder, AsciidocConfiguration configuration,
+			IProgressMonitor monitor) {
 
 		OptionsBuilder optionsBuilder = OptionsBuilder.options().backend("html").headerFooter(true)
 				.attributes(AttributesBuilder.attributes().attribute("stylesheet", configuration.getStylesheetPath()));
@@ -104,22 +106,29 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 				monitor.subTask("Rendering " + sourceFile.getName() + "...");
 				try {
 					InputStreamReader reader = new InputStreamReader(sourceFile.getContents());
-					IFile destinationFile = targetFolder.getFile(sourceFile.getLocation().makeRelativeTo(sourcesFolder.getLocation()).removeFileExtension()
-							.addFileExtension("html"));
+					IFile destinationFile = targetFolder.getFile(
+							sourceFile.getLocation().makeRelativeTo(sourcesFolder.getLocation()).removeFileExtension().addFileExtension("html"));
 					if (!destinationFile.getParent().exists()) {
 						mkdirs((IFolder) destinationFile.getParent());
 					}
 					File file = new File(destinationFile.getLocation().toString());
 					file.createNewFile();
 					FileWriter writer = new FileWriter(file);
-					AsciidocInstance.INSTANCE.getAsciidoctor().convert(reader, writer, optionsBuilder);
+					monitor.subTask("Loading Asciidoctor Instance...");
+					Asciidoctor asciidoctor = AsciidocInstance.INSTANCE.getAsciidoctor();
+					monitor.subTask("Rendering " + sourceFile.getName() + "...");
+					long begin = System.nanoTime();
+					asciidoctor.convert(reader, writer, optionsBuilder);
 					writer.close();
 					reader.close();
+					monitor.subTask(sourceFile.getName() + " rendered successfully...");
+					AsciidocBuilderLogger.info(
+							"File at " + sourceFile.getFullPath().toString() + " rendered in " + (System.nanoTime() - begin) / 1000000L + " ms.");
 					AsciidocBuilderListeners.INSTANCE.notifyBuild(destinationFile);
 				} catch (CoreException e) {
-					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+					AsciidocBuilderLogger.warn(e.getMessage(), e);
 				} catch (IOException e) {
-					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+					AsciidocBuilderLogger.warn(e.getMessage(), e);
 				}
 			}
 		}
@@ -140,9 +149,11 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 						destinationFile.delete(true, new NullProgressMonitor());
 					}
 					resourceFile.copy(destinationFile.getFullPath(), true, new NullProgressMonitor());
+					AsciidocBuilderLogger
+							.info("File at " + resourceFile.getFullPath().toString() + " copied to output at " + destinationFile.getFullPath() + ".");
 					AsciidocBuilderListeners.INSTANCE.notifyBuild(destinationFile);
 				} catch (CoreException e) {
-					Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
+					AsciidocBuilderLogger.warn(e.getMessage(), e);
 				}
 			}
 		}

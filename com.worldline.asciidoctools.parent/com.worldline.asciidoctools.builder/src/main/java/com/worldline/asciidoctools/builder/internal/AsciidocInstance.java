@@ -52,24 +52,27 @@ public enum AsciidocInstance {
 			Enumeration<URL> resources = Activator.getDefault().getBundle().getResources("/META-INF/jruby.home");
 			while (resources.hasMoreElements() && this.asciidoctor == null) {
 				URL nextElement = resources.nextElement();
-
-				// Next try : https://github.com/ajuckel/jbosstools-asciidoctor/commit/ae76a4ea572c3ab49daae3ce975c7994e337e585
 				String path = getPath(nextElement);
 				if (path.endsWith("/"))
-					path = path.substring(0, path.length() - 1); // remove trailing slash
+					path = path.substring(0, path.length() - 1);
 				System.setProperty("jruby.home", path);
+				Activator.getDefault().getLog().log(new Status(IStatus.INFO, Activator.PLUGIN_ID, "Set JRuby Home path to : " + path));
 				try {
+					long begin = System.nanoTime();
 					this.asciidoctor = JRubyAsciidoctor.create(Collections.singletonList("gems/asciidoctor-1.5.3/lib"));
+					AsciidocBuilderLogger.info("Asciidoctor loaded successfully with version " + this.asciidoctor.asciidoctorVersion() + " in "
+							+ (System.nanoTime() - begin) / 1000000 + " ms.");
 				} catch (Exception e) {
-					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+					AsciidocBuilderLogger.warn(e.getMessage(), e);
 				}
 			}
 		} catch (Exception e) {
-			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+			AsciidocBuilderLogger.warn(e.getMessage(), e);
 		}
 
 		if (asciidoctor == null) {
-			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, " Failed to load Asciidoctor instance. Embedded building process will fail. Maybe you should try to start Eclipse with -clean option ?"));
+			AsciidocBuilderLogger.error(
+					" Failed to load Asciidoctor instance. Embedded building process will fail. Maybe you should try to start Eclipse with -clean option ?");
 		}
 
 	}
@@ -78,8 +81,8 @@ public enum AsciidocInstance {
 		return asciidoctor;
 	}
 
-	private static String getPath(URL url) throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
+	private static String getPath(URL url) throws IOException, NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
 		URLConnection conn = url.openConnection();
 		Method method = conn.getClass().getMethod("getFileURL");
 		method.setAccessible(true);

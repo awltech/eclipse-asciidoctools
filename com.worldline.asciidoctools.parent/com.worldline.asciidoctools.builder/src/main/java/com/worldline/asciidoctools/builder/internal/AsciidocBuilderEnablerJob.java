@@ -160,7 +160,7 @@ public class AsciidocBuilderEnablerJob extends WorkspaceJob {
 			MavenPlugin.getMavenModelManager().createMavenModel(pomFile, mavenModel);
 			backupFile.delete(true, monitor);
 		} catch (CoreException e) {
-			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+			AsciidocBuilderLogger.warn(e.getMessage(), e);
 		}
 	}
 
