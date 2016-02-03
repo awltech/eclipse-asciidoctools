@@ -101,7 +101,7 @@ public class AsciidocBuilderLogger {
 	}
 
 	private static void log(int level, String message, Throwable t, Object... parameters) {
-		if (loggerLevel >= level && isValidLevel(level)) {
+		if (loggerLevel <= level && isValidLevel(level)) {
 			String _message = parameters.length > 0 ? String.format(message, parameters) : message;
 			Status status = t != null ? new Status(level, Activator.PLUGIN_ID, _message, t) : new Status(level, Activator.PLUGIN_ID, _message);
 			Activator.getDefault().getLog().log(status);
@@ -110,7 +110,7 @@ public class AsciidocBuilderLogger {
 	}
 
 	private static boolean isValidLevel(int level) {
-		return (level == IStatus.CANCEL || level == IStatus.INFO || level == IStatus.WARNING || level == IStatus.ERROR);
+		return (level == IStatus.OK || level == IStatus.CANCEL || level == IStatus.INFO || level == IStatus.WARNING || level == IStatus.ERROR);
 	}
 
 }
