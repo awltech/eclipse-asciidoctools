@@ -122,7 +122,7 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 					writer.close();
 					reader.close();
 					monitor.subTask(sourceFile.getName() + " rendered successfully...");
-					AsciidocBuilderLogger.info(
+					AsciidocBuilderLogger.ok(
 							"File at " + sourceFile.getFullPath().toString() + " rendered in " + (System.nanoTime() - begin) / 1000000L + " ms.");
 					AsciidocBuilderListeners.INSTANCE.notifyBuild(destinationFile);
 				} catch (CoreException e) {
@@ -150,7 +150,7 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 					}
 					resourceFile.copy(destinationFile.getFullPath(), true, new NullProgressMonitor());
 					AsciidocBuilderLogger
-							.info("File at " + resourceFile.getFullPath().toString() + " copied to output at " + destinationFile.getFullPath() + ".");
+							.ok("File at " + resourceFile.getFullPath().toString() + " copied to output at " + destinationFile.getFullPath() + ".");
 					AsciidocBuilderListeners.INSTANCE.notifyBuild(destinationFile);
 				} catch (CoreException e) {
 					AsciidocBuilderLogger.warn(e.getMessage(), e);

@@ -26,7 +26,8 @@ import org.eclipse.core.runtime.Status;
 
 /**
  * 
- * Implementation of logger class that wraps the Eclipse Error Log logging mechanism
+ * Implementation of logger class that wraps the Eclipse Error Log logging
+ * mechanism
  * 
  * @author mvanbesien <mvaawl@gmail.com>
  * @since 0.1
@@ -38,7 +39,7 @@ public class AsciidocBuilderLogger {
 
 	public static void setLevel(int level) {
 		if (isValidLevel(level)) {
-			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, level);
+			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, String.valueOf(level));
 			AsciidocBuilderLogger.loggerLevel = getLoggerLevel();
 		}
 	}
@@ -48,11 +49,21 @@ public class AsciidocBuilderLogger {
 	private static int getLoggerLevel() {
 		boolean contains = Activator.getDefault().getPreferenceStore().contains(LOGGER_LEVEL);
 		if (!contains) {
-			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, IStatus.INFO);
+			Activator.getDefault().getPreferenceStore().setValue(LOGGER_LEVEL, String.valueOf(IStatus.INFO));
 		}
-		return Activator.getDefault().getPreferenceStore().getInt(LOGGER_LEVEL);
+		String string = Activator.getDefault().getPreferenceStore().getString(LOGGER_LEVEL);
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException e) {
+			return IStatus.INFO;
+		}
 	}
 
+
+	public static void ok(String message, Object... parameters) {
+		log(IStatus.OK, message, null, parameters);
+	}
+	
 	public static void info(String message, Object... parameters) {
 		log(IStatus.INFO, message, null, parameters);
 	}
@@ -69,6 +80,10 @@ public class AsciidocBuilderLogger {
 		log(IStatus.CANCEL, message, null, parameters);
 	}
 
+	public static void ok(String message, Throwable t, Object... parameters) {
+		log(IStatus.OK, message, t, parameters);
+	}
+	
 	public static void info(String message, Throwable t, Object... parameters) {
 		log(IStatus.INFO, message, t, parameters);
 	}
