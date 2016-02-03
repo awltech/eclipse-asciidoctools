@@ -50,7 +50,13 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		AsciidocBuilderLogger.info("Started Asciidoc Builder Plugin with ID: " + plugin.getBundle().getBundleId());
+		AsciidocBuilderLogger.info("Starting Asciidoc Builder Plugin with ID: " + plugin.getBundle().getBundleId());
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				AsciidocInstance.INSTANCE.name();
+			}
+		}).start();
 	}
 
 	/*
