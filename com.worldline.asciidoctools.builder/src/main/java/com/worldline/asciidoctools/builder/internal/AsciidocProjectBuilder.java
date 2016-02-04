@@ -99,7 +99,7 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 	private void generate(IFolder sourcesFolder, Set<IFile> sourceFiles, IFolder targetFolder, AsciidocConfiguration configuration,
 			IProgressMonitor monitor) {
 
-		OptionsBuilder optionsBuilder = OptionsBuilder.options().backend("html").headerFooter(true)
+		OptionsBuilder optionsBuilder = OptionsBuilder.options().backend(configuration.getBackend()).headerFooter(true)
 				.attributes(AttributesBuilder.attributes().attribute("stylesheet", configuration.getStylesheetPath()));
 		for (IFile sourceFile : sourceFiles) {
 			if (sourceFile.exists()) {

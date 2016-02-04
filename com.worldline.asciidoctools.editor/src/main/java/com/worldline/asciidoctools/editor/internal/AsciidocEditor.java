@@ -254,7 +254,7 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 				IPath targetPath = new Path(configuration.getTargetPath());
 				if (sourcesPath.isPrefixOf(projectRelativePath)) {
 					IPath removeFirstSegments = projectRelativePath.removeFirstSegments(sourcesPath.segmentCount())
-							.removeFileExtension().addFileExtension(configuration.getBackend());
+							.removeFileExtension().addFileExtension("html");
 					IFile targetFile = file.getProject().getFolder(targetPath).getFile(removeFirstSegments);
 					return targetFile;
 				}
