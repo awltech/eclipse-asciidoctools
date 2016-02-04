@@ -4,13 +4,13 @@
   <artifactId>com.worldline.asciidoctools.parent</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Eclipse AsciidocTools Parent</name>
+  <name>Eclipse AsciidocTools</name>
   
   	<developers>
 		<developer>
 			<id>mvanbesien</id>
 			<name>Maxence Vanbésien</name>
-			<email>maxence.vanbesien@worldline.com</email>
+			<email>mvaawl@gmail.com</email>
 			<roles>
 				<role>Creator</role>
 				<role>Project Leader</role>
@@ -23,8 +23,6 @@
 		<tycho-version>0.24.0</tycho-version>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<platform-version-name>kepler</platform-version-name>
-		<platform-tag>e43x</platform-tag>
 		<maven.javadoc.skip>true</maven.javadoc.skip>
 		<release-type>SNAPSHOT</release-type>
 		<format>'N'yyyyMMddHHmm'-${release-type}'</format>
@@ -32,7 +30,7 @@
 
 	<repositories>
 		<repository>
-			<id>kepler</id>
+			<id>luna</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/releases/luna</url>
 		</repository>

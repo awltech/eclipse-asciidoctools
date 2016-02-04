@@ -6,7 +6,13 @@
       provider-name="Worldline.com">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      Asciidoc Tools is a lightweight Asciidoc integration into the Eclipse IDE.
+
+It currently requires Maven usage and proposes
+- Scaffolding to have ready to build environment (pom.xml configuration &amp; right folder structure
+- Eclipse Project builder based on the Maven configuration
+- Dual Screen Editor for live HTML rendering of the Asciidoc document.
+- See more at: https://marketplace.eclipse.org/content/asciidoc-tools#sthash.tgPjnSo0.dpuf
    </description>
 
    <copyright url="http://www.example.com/copyright">
