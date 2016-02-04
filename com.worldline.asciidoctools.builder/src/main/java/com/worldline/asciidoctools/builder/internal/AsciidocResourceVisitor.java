@@ -23,6 +23,7 @@ package com.worldline.asciidoctools.builder.internal;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -34,7 +35,8 @@ import org.eclipse.core.runtime.CoreException;
 
 /**
  * 
- * Eclipse Asciidoc Resource visitor that retrieves files that are modified/added for Asciidoc-related refresh
+ * Eclipse Asciidoc Resource visitor that retrieves files that are
+ * modified/added for Asciidoc-related refresh
  * 
  * @author mvanbesien <mvaawl@gmail.com>
  * @since 0.1
@@ -78,14 +80,20 @@ public class AsciidocResourceVisitor implements IResourceDeltaVisitor, IResource
 		return true;
 	}
 
+	protected static final String ASCIIDOC_REG_EXP_EXTENSION = ".*\\.a((sc(iidoc)?)|d(oc)?)$";
+
 	public void processFile(IFile file) {
-		if (this.sourceFolder.getLocation().isPrefixOf(file.getLocation())) {
-			if ("ad".equals(file.getFileExtension()) || "asciidoc".equals(file.getFileExtension())) {
-				this.sourceFiles.add(file);
+		if (file.exists()) {
+			if (this.sourceFolder.getLocation().isPrefixOf(file.getLocation())) {
+				if (Pattern.matches(ASCIIDOC_REG_EXP_EXTENSION, file.getName())) {
+					this.sourceFiles.add(file);
+				} else {
+					this.resourceFiles.add(file);
+				}
 			}
-		}
-		if (this.resourceFolder.getLocation().isPrefixOf(file.getLocation())) {
-			this.resourceFiles.add(file);
+			if (this.resourceFolder.getLocation().isPrefixOf(file.getLocation())) {
+				this.resourceFiles.add(file);
+			}
 		}
 	}
 

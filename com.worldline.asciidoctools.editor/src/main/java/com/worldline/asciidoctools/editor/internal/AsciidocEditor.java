@@ -26,6 +26,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -112,15 +115,13 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		this.browser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changing(LocationEvent event) {
-				if (((Browser) event.getSource()).getUrl() != null
-						&& !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
+				if (((Browser) event.getSource()).getUrl() != null && !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
 					try {
 						URI realFileURI = new File(getDestinationFile().getLocation().toString()).toURI();
 						URI expectedFileURI = URI.create(event.location);
 						event.doit = realFileURI.getPath().equals(expectedFileURI.getPath());
 					} catch (Exception e) {
-						Activator.getDefault().getLog()
-								.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 					}
 				}
 			}
@@ -247,16 +248,34 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		if (this.editorInput instanceof IFileEditorInput) {
 			IFileEditorInput input = (IFileEditorInput) this.editorInput;
 			IFile file = input.getFile();
-			IPath projectRelativePath = file.getProjectRelativePath();
 			AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(file.getProject());
 			if (configuration != null) {
-				IPath sourcesPath = new Path(configuration.getSourcesPath());
-				IPath targetPath = new Path(configuration.getTargetPath());
-				if (sourcesPath.isPrefixOf(projectRelativePath)) {
-					IPath removeFirstSegments = projectRelativePath.removeFirstSegments(sourcesPath.segmentCount())
-							.removeFileExtension().addFileExtension("html");
-					IFile targetFile = file.getProject().getFolder(targetPath).getFile(removeFirstSegments);
-					return targetFile;
+				return findMatchingFile(configuration, file);
+				}
+		}
+		return null;
+	}
+
+	private static final IFile findMatchingFile(AsciidocConfiguration configuration, IFile inputFile) {
+		IPath sourcesPath = new Path(configuration.getSourcesPath());
+		IPath targetPath = new Path(configuration.getTargetPath());
+		IPath fileParentPath = inputFile.getParent().getProjectRelativePath();
+		if (sourcesPath.isPrefixOf(fileParentPath)) {
+			IPath outputFolderPath = targetPath.append(fileParentPath.removeFirstSegments(sourcesPath.segmentCount()));
+			IFolder outputFolder = inputFile.getProject().getFolder(outputFolderPath);
+			if (outputFolder.exists()) {
+				try {
+					for (IResource resource : outputFolder.members()) {
+						if (resource.exists() && resource instanceof IFile && resource.isAccessible()) {
+							IFile matchingFile = (IFile) resource;
+							if (matchingFile.getFullPath().removeFileExtension().lastSegment()
+									.equals(inputFile.getFullPath().removeFileExtension().lastSegment())) {
+								return matchingFile;
+							}
+						}
+					}
+				} catch (CoreException e) {
+					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 				}
 			}
 		}
