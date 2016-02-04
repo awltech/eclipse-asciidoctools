@@ -2,7 +2,7 @@
 <feature
       id="com.worldline.asciidoctools.feature"
       label="Asciidoc Tools"
-      version="0.1.1.qualifier"
+      version="0.2.0.qualifier"
       provider-name="Worldline.com">
 
    <description url="http://www.example.com/description">
