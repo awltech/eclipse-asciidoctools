@@ -2,6 +2,7 @@
 	<attributes>
 		<stylesheet>${stylesheet.path}</stylesheet>
 		<linkcss>true</linkcss>
+		<imagesdir>.</imagesdir>
 	</attributes>
 	<backend>html</backend>
 	<sourceDirectory>${source.asciidoc.sources}</sourceDirectory>
