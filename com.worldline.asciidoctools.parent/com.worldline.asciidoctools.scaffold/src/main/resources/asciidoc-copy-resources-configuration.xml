@@ -1,8 +1,11 @@
 <configuration>
-	<target>
-		<mkdir dir="${target.asciidoc}"/>
-		<copy todir="${target.asciidoc}">
-			<fileset dir="${source.asciidoc.resources}"/>
-		</copy>
-	</target>
+	<resources>
+		<resource>
+	    	<directory>${source.asciidoc.resources}</directory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</resource>
+	</resources>
+	<outputDirectory>${target.asciidoc}</outputDirectory>
 </configuration>

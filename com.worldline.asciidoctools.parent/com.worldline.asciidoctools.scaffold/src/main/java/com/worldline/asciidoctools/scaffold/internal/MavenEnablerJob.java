@@ -188,24 +188,25 @@ public class MavenEnablerJob extends WorkspaceJob {
 		return build;
 	}
 
-	private static Plugin getOrCreateAntrunPlugin(Model mavenModel) {
+	private static Plugin getOrCreateResourcesPlugin(Model mavenModel) {
 
 		Build build = getOrCreateBuild(mavenModel);
 
 		// Locate the plugin and returns if exists
 		for (Iterator<Plugin> iterator = build.getPlugins().iterator(); iterator.hasNext();) {
 			Plugin next = iterator.next();
-			if ("maven-antrun-plugin".equals(next.getArtifactId())) {
+			if ("maven-resources-plugin".equals(next.getArtifactId())) {
 				return next;
 			}
 		}
 
 		// Creates if couldn't be found.
-		Plugin antrunPlugin = new Plugin();
-		antrunPlugin.setArtifactId("maven-antrun-plugin");
-		antrunPlugin.setVersion("1.7");
-		build.getPlugins().add(antrunPlugin);
-		return antrunPlugin;
+		Plugin resourcesPlugin = new Plugin();
+		resourcesPlugin.setGroupId("org.apache.maven.plugins");
+		resourcesPlugin.setArtifactId("maven-resources-plugin");
+		resourcesPlugin.setVersion("${maven.resources.plugin.version}");
+		build.getPlugins().add(resourcesPlugin);
+		return resourcesPlugin;
 	}
 
 	private static Xpp3Dom getConfiguration(String fileName) {
@@ -234,7 +235,7 @@ public class MavenEnablerJob extends WorkspaceJob {
 
 	private static IStatus addCopyResources(Model mavenModel, IProgressMonitor monitor) {
 
-		Plugin plugin = getOrCreateAntrunPlugin(mavenModel);
+		Plugin plugin = getOrCreateResourcesPlugin(mavenModel);
 		for (PluginExecution execution : plugin.getExecutions()) {
 			if ("asciidoc-copy-resources".equals(execution.getId())) {
 				return Status.CANCEL_STATUS;
@@ -243,8 +244,8 @@ public class MavenEnablerJob extends WorkspaceJob {
 
 		PluginExecution execution = new PluginExecution();
 		execution.setId("asciidoc-copy-resources");
-		execution.setPhase("compile");
-		execution.getGoals().add("run");
+		execution.setPhase("process-resources");
+		execution.getGoals().add("copy-resources");
 		plugin.getExecutions().add(execution);
 
 		execution.setConfiguration(MavenEnablerJob.getConfiguration("/asciidoc-copy-resources-configuration.xml"));
@@ -270,7 +271,7 @@ public class MavenEnablerJob extends WorkspaceJob {
 			plugin = new Plugin();
 			plugin.setGroupId("org.asciidoctor");
 			plugin.setArtifactId("asciidoctor-maven-plugin");
-			plugin.setVersion("0.1.3.1");
+			plugin.setVersion("${version.maven.asciidoc}");
 			build.addPlugin(plugin);
 		}
 		PluginExecution execution = new PluginExecution();
