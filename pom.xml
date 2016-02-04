@@ -20,7 +20,7 @@
 	</developers>
 
 	<properties>
-		<tycho-version>0.20.0</tycho-version>
+		<tycho-version>0.24.0</tycho-version>
 		<tycho-groupid>org.eclipse.tycho</tycho-groupid>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<platform-version-name>kepler</platform-version-name>
@@ -107,7 +107,7 @@
 		</plugins>
 	</build>
 	
-	<inceptionYear>2014</inceptionYear>
+	<inceptionYear>2016</inceptionYear>
 	<modules>
 		<module>com.worldline.asciidoctools.scaffold</module>
 		<module>com.worldline.asciidoctools.builder</module>
