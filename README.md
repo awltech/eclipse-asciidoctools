@@ -10,3 +10,7 @@ You can install the latest release version from
 Also available (release versions) on the Eclipse marketplace at https://marketplace.eclipse.org/content/asciidoc-tools !
 
 Build status : ![travis status](https://travis-ci.org/awltech/eclipse-asciidoctools.svg?branch=master)
+
+<a href="http://with-eclipse.github.io/" target="_blank">
+<img alt="with-Eclipse logo" src="http://with-eclipse.github.io/with-eclipse-0.jpg" />
+</a>
