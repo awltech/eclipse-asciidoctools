@@ -21,14 +21,20 @@
  */
 package com.worldline.asciidoctools.builder;
 
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -48,15 +54,35 @@ import com.worldline.asciidoctools.builder.internal.Activator;
  */
 public class AsciidocConfiguration {
 
-	private String sourcesPath = "src/main/asciidoc";
+	private static final String TARGETPATH_DEFAULT = "target/generated-docs";
 
-	private String resourcesPath = "src/main/doc-resources";
+	private static final String TARGETPATH_PROPERTY = "targetPath";
 
-	private String targetPath = "target/generated-docs";
+	private static final String STYLESHEETPATH_DEFAULT = "css/stylesheet.css";
 
-	private String stylesheetPath = "css/stylesheet.css";
+	private static final String STYLESHEETPATH_PROPERTY = "stylesheetPath";
 
-	private String backend = "html";
+	private static final String SOURCESPATH_DEFAULT = "src/main/asciidoc";
+
+	private static final String SOURCESPATH_PROPERTY = "sourcesPath";
+
+	private static final String RESOURCESPATH_DEFAULT = "src/main/doc-resources";
+
+	private static final String RESOURCESPATH_PROPERTY = "resourcesPath";
+
+	private static final String BACKEND_PROPERTY = "backend";
+
+	private static final String BACKEND_DEFAULT = "html";
+
+	private String sourcesPath = SOURCESPATH_DEFAULT;
+
+	private String resourcesPath = RESOURCESPATH_DEFAULT;
+
+	private String targetPath = TARGETPATH_DEFAULT;
+
+	private String stylesheetPath = STYLESHEETPATH_DEFAULT;
+
+	private String backend = BACKEND_DEFAULT;
 
 	public String getBackend() {
 		return backend;
@@ -101,36 +127,81 @@ public class AsciidocConfiguration {
 	public static AsciidocConfiguration getConfiguration(IProject project) {
 		AsciidocConfiguration configuration = new AsciidocConfiguration();
 		if (!updateConfigurationFromMaven(configuration, project)) {
-			if (!updateConfigurationFromSettings(configuration, project)) {
-				updateConfigurationFromProperties(configuration, project);
+			if (!updateConfigurationFromProperties(configuration, project)) {
+				updateConfigurationFromSettings(configuration, project);
 			}
 		}
 		return configuration;
 	}
 
-	private static void updateConfigurationFromProperties(AsciidocConfiguration configuration, IProject project) {
-		// TODO Auto-generated method stub
+	private static IFile getFileFromList(IProject project, String... fileNames) {
+		for (String fileName : fileNames) {
+			IFile file = project.getFile(fileName);
+			if (file.exists()) {
+				return file;
+			}
+		}
+		return null;
+	}
 
+	private static boolean updateConfigurationFromProperties(AsciidocConfiguration configuration, IProject project) {
+		IFile file = getFileFromList(project, "asciidoctools.properties", "conf/asciidoctools.properties");
+		if (file == null || !file.exists()) {
+			return false;
+		}
+
+		Properties properties = new Properties();
+		try {
+			properties.load(file.getContents());
+		} catch (IOException e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+			return false;
+		} catch (CoreException e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+			return false;
+		}
+
+		String backend = properties.getProperty(BACKEND_PROPERTY, BACKEND_DEFAULT);
+		String resourcesPath = properties.getProperty(RESOURCESPATH_PROPERTY, RESOURCESPATH_DEFAULT);
+		String sourcesPath = properties.getProperty(SOURCESPATH_PROPERTY, SOURCESPATH_DEFAULT);
+		String stylesheetPath = properties.getProperty(STYLESHEETPATH_PROPERTY, STYLESHEETPATH_DEFAULT);
+		String targetPath = properties.getProperty(TARGETPATH_PROPERTY, TARGETPATH_DEFAULT);
+
+		configuration.setBackend(backend);
+		configuration.setResourcesPath(resourcesPath);
+		configuration.setSourcesPath(sourcesPath);
+		configuration.setStylesheetPath(stylesheetPath);
+		configuration.setTargetPath(targetPath);
+
+		return true;
+	}
+
+	private static void createSettings(IProject project, String backend, String resourcesPath, String sourcesPath, String stylesheetPath,
+			String targetPath) throws BackingStoreException {
+		final IScopeContext projectScope = new ProjectScope(project);
+		IEclipsePreferences preferences = projectScope.getNode(Activator.PLUGIN_ID);
+		if (preferences.keys().length == 0) {
+			preferences.put(BACKEND_PROPERTY, backend);
+			preferences.put(RESOURCESPATH_PROPERTY, resourcesPath);
+			preferences.put(SOURCESPATH_PROPERTY, sourcesPath);
+			preferences.put(STYLESHEETPATH_PROPERTY, stylesheetPath);
+			preferences.put(TARGETPATH_PROPERTY, targetPath);
+			preferences.flush();
+		}
 	}
 
 	private static boolean updateConfigurationFromSettings(AsciidocConfiguration configuration, IProject project) {
 		final IScopeContext projectScope = new ProjectScope(project);
 		IEclipsePreferences preferences = projectScope.getNode(Activator.PLUGIN_ID);
 		try {
-			if (preferences.keys().length == 0) {
-				preferences.put("backend", "html");
-				preferences.put("resourcesPath", "src/main/doc-resources");
-				preferences.put("sourcesPath", "src/main/asciidoc");
-				preferences.put("stylesheetPath", "css/stylesheet.css");
-				preferences.put("targetPath", "target/generated-docs");
-				preferences.flush();
-			}
-			configuration.setBackend(preferences.get("backend", "html"));
-			configuration.setResourcesPath(preferences.get("resourcesPath", "src/main/doc-resources"));
-			configuration.setSourcesPath(preferences.get("sourcesPath", "src/main/asciidoc"));
-			configuration.setStylesheetPath(preferences.get("stylesheetPath", "css/stylesheet.css"));
-			configuration.setTargetPath(preferences.get("targetPath", "target/generated-docs"));
+			createSettings(project, BACKEND_DEFAULT, RESOURCESPATH_DEFAULT, SOURCESPATH_DEFAULT, STYLESHEETPATH_DEFAULT, TARGETPATH_DEFAULT);
+			configuration.setBackend(preferences.get(BACKEND_PROPERTY, BACKEND_DEFAULT));
+			configuration.setResourcesPath(preferences.get(RESOURCESPATH_PROPERTY, RESOURCESPATH_DEFAULT));
+			configuration.setSourcesPath(preferences.get(SOURCESPATH_PROPERTY, SOURCESPATH_DEFAULT));
+			configuration.setStylesheetPath(preferences.get(STYLESHEETPATH_PROPERTY, STYLESHEETPATH_DEFAULT));
+			configuration.setTargetPath(preferences.get(TARGETPATH_PROPERTY, TARGETPATH_DEFAULT));
 		} catch (BackingStoreException e) {
+			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 			return false;
 		}
 		return true;
@@ -151,12 +222,10 @@ public class AsciidocConfiguration {
 				for (Iterator<Plugin> iterator = model.getBuild().getPlugins().iterator(); iterator.hasNext()
 						&& (asciidocPlugin == null || antCopyPlugin == null);) {
 					Plugin plugin = iterator.next();
-					if ("org.asciidoctor".equals(plugin.getGroupId())
-							&& "asciidoctor-maven-plugin".equals(plugin.getArtifactId())) {
+					if ("org.asciidoctor".equals(plugin.getGroupId()) && "asciidoctor-maven-plugin".equals(plugin.getArtifactId())) {
 						asciidocPlugin = plugin;
 					}
-					if ("org.apache.maven.plugins".equals(plugin.getGroupId())
-							&& "maven-antrun-plugin".equals(plugin.getArtifactId())) {
+					if ("org.apache.maven.plugins".equals(plugin.getGroupId()) && "maven-antrun-plugin".equals(plugin.getArtifactId())) {
 						antCopyPlugin = plugin;
 					}
 				}
@@ -165,8 +234,7 @@ public class AsciidocConfiguration {
 
 		if (asciidocPlugin != null) {
 			PluginExecution pluginExecution = null;
-			for (Iterator<PluginExecution> iterator = asciidocPlugin.getExecutions().iterator(); iterator.hasNext()
-					&& pluginExecution == null;) {
+			for (Iterator<PluginExecution> iterator = asciidocPlugin.getExecutions().iterator(); iterator.hasNext() && pluginExecution == null;) {
 				PluginExecution temp = iterator.next();
 				if (temp.getGoals().contains("process-asciidoc")) {
 					pluginExecution = temp;
@@ -178,24 +246,22 @@ public class AsciidocConfiguration {
 				if (xpp3DomConfiguration.getChild("sourceDirectory") != null) {
 					configuration.setSourcesPath(xpp3DomConfiguration.getChild("sourceDirectory").getValue());
 				}
-				if (xpp3DomConfiguration.getChild("backend") != null) {
-					configuration.setBackend(xpp3DomConfiguration.getChild("backend").getValue());
+				if (xpp3DomConfiguration.getChild(BACKEND_PROPERTY) != null) {
+					configuration.setBackend(xpp3DomConfiguration.getChild(BACKEND_PROPERTY).getValue());
 				}
 				if (xpp3DomConfiguration.getChild("outputDirectory") != null) {
 					configuration.setTargetPath(xpp3DomConfiguration.getChild("outputDirectory").getValue());
 				}
 				if (xpp3DomConfiguration.getChild("attributes") != null
 						&& xpp3DomConfiguration.getChild("attributes").getChild("stylesheet") != null) {
-					configuration.setStylesheetPath(
-							xpp3DomConfiguration.getChild("attributes").getChild("stylesheet").getValue());
+					configuration.setStylesheetPath(xpp3DomConfiguration.getChild("attributes").getChild("stylesheet").getValue());
 				}
 			}
 		}
 
 		if (antCopyPlugin != null) {
 			PluginExecution pluginExecution = null;
-			for (Iterator<PluginExecution> iterator = antCopyPlugin.getExecutions().iterator(); iterator.hasNext()
-					&& pluginExecution == null;) {
+			for (Iterator<PluginExecution> iterator = antCopyPlugin.getExecutions().iterator(); iterator.hasNext() && pluginExecution == null;) {
 				PluginExecution temp = iterator.next();
 				if (temp.getGoals().contains("run")) {
 					pluginExecution = temp;
@@ -208,8 +274,8 @@ public class AsciidocConfiguration {
 				if (xpp3DomConfiguration.getChild("target") != null) {
 					if (xpp3DomConfiguration.getChild("target").getChild("copy") != null) {
 						if (xpp3DomConfiguration.getChild("target").getChild("copy").getChild("fileset") != null) {
-							configuration.setResourcesPath(xpp3DomConfiguration.getChild("target").getChild("copy")
-									.getChild("fileset").getAttribute("dir"));
+							configuration.setResourcesPath(
+									xpp3DomConfiguration.getChild("target").getChild("copy").getChild("fileset").getAttribute("dir"));
 						}
 					}
 				}
