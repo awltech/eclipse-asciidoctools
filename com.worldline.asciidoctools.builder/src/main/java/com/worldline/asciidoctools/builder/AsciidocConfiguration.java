@@ -28,8 +28,14 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.m2e.core.MavenPlugin;
 import org.eclipse.m2e.core.project.IMavenProjectFacade;
+import org.osgi.service.prefs.BackingStoreException;
+
+import com.worldline.asciidoctools.builder.internal.Activator;
 
 /**
  * 
@@ -95,14 +101,39 @@ public class AsciidocConfiguration {
 	public static AsciidocConfiguration getConfiguration(IProject project) {
 		AsciidocConfiguration configuration = new AsciidocConfiguration();
 		if (!updateConfigurationFromMaven(configuration, project)) {
-			updateConfigurationFromSettings(configuration, project);
+			if (!updateConfigurationFromSettings(configuration, project)) {
+				updateConfigurationFromProperties(configuration, project);
+			}
 		}
 		return configuration;
 	}
 
-	private static void updateConfigurationFromSettings(AsciidocConfiguration configuration, IProject project) {
+	private static void updateConfigurationFromProperties(AsciidocConfiguration configuration, IProject project) {
 		// TODO Auto-generated method stub
-		
+
+	}
+
+	private static boolean updateConfigurationFromSettings(AsciidocConfiguration configuration, IProject project) {
+		final IScopeContext projectScope = new ProjectScope(project);
+		IEclipsePreferences preferences = projectScope.getNode(Activator.PLUGIN_ID);
+		try {
+			if (preferences.keys().length == 0) {
+				preferences.put("backend", "html");
+				preferences.put("resourcesPath", "src/main/doc-resources");
+				preferences.put("sourcesPath", "src/main/asciidoc");
+				preferences.put("stylesheetPath", "css/stylesheet.css");
+				preferences.put("targetPath", "target/generated-docs");
+				preferences.flush();
+			}
+			configuration.setBackend(preferences.get("backend", "html"));
+			configuration.setResourcesPath(preferences.get("resourcesPath", "src/main/doc-resources"));
+			configuration.setSourcesPath(preferences.get("sourcesPath", "src/main/asciidoc"));
+			configuration.setStylesheetPath(preferences.get("stylesheetPath", "css/stylesheet.css"));
+			configuration.setTargetPath(preferences.get("targetPath", "target/generated-docs"));
+		} catch (BackingStoreException e) {
+			return false;
+		}
+		return true;
 	}
 
 	private static boolean updateConfigurationFromMaven(AsciidocConfiguration configuration, IProject project) {
