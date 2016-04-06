@@ -33,7 +33,8 @@ import org.eclipse.m2e.core.project.IMavenProjectFacade;
 
 /**
  * 
- * Asciidoc Project Configuration pojo. Contains information about the source/resources location, where to put generated doc etc...
+ * Asciidoc Project Configuration pojo. Contains information about the
+ * source/resources location, where to put generated doc etc...
  * 
  * @author mvanbesien <mvaawl@gmail.com>
  * @since 0.1
@@ -93,11 +94,22 @@ public class AsciidocConfiguration {
 
 	public static AsciidocConfiguration getConfiguration(IProject project) {
 		AsciidocConfiguration configuration = new AsciidocConfiguration();
+		if (!updateConfigurationFromMaven(configuration, project)) {
+			updateConfigurationFromSettings(configuration, project);
+		}
+		return configuration;
+	}
 
+	private static void updateConfigurationFromSettings(AsciidocConfiguration configuration, IProject project) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static boolean updateConfigurationFromMaven(AsciidocConfiguration configuration, IProject project) {
 		// Get the asciidoc configuration
 		IMavenProjectFacade MavenProjectFacade = MavenPlugin.getMavenProjectRegistry().getProject(project);
 		if (MavenProjectFacade == null) {
-			return configuration;
+			return false;
 		}
 
 		Plugin asciidocPlugin = null;
@@ -105,12 +117,15 @@ public class AsciidocConfiguration {
 		if (MavenProjectFacade != null && MavenProjectFacade.getMavenProject() != null) {
 			Model model = MavenProjectFacade.getMavenProject().getModel();
 			if (model.getBuild() != null) {
-				for (Iterator<Plugin> iterator = model.getBuild().getPlugins().iterator(); iterator.hasNext() && (asciidocPlugin == null || antCopyPlugin == null);) {
+				for (Iterator<Plugin> iterator = model.getBuild().getPlugins().iterator(); iterator.hasNext()
+						&& (asciidocPlugin == null || antCopyPlugin == null);) {
 					Plugin plugin = iterator.next();
-					if ("org.asciidoctor".equals(plugin.getGroupId()) && "asciidoctor-maven-plugin".equals(plugin.getArtifactId())) {
+					if ("org.asciidoctor".equals(plugin.getGroupId())
+							&& "asciidoctor-maven-plugin".equals(plugin.getArtifactId())) {
 						asciidocPlugin = plugin;
 					}
-					if ("org.apache.maven.plugins".equals(plugin.getGroupId()) && "maven-antrun-plugin".equals(plugin.getArtifactId())) {
+					if ("org.apache.maven.plugins".equals(plugin.getGroupId())
+							&& "maven-antrun-plugin".equals(plugin.getArtifactId())) {
 						antCopyPlugin = plugin;
 					}
 				}
@@ -119,7 +134,8 @@ public class AsciidocConfiguration {
 
 		if (asciidocPlugin != null) {
 			PluginExecution pluginExecution = null;
-			for (Iterator<PluginExecution> iterator = asciidocPlugin.getExecutions().iterator(); iterator.hasNext() && pluginExecution == null;) {
+			for (Iterator<PluginExecution> iterator = asciidocPlugin.getExecutions().iterator(); iterator.hasNext()
+					&& pluginExecution == null;) {
 				PluginExecution temp = iterator.next();
 				if (temp.getGoals().contains("process-asciidoc")) {
 					pluginExecution = temp;
@@ -137,15 +153,18 @@ public class AsciidocConfiguration {
 				if (xpp3DomConfiguration.getChild("outputDirectory") != null) {
 					configuration.setTargetPath(xpp3DomConfiguration.getChild("outputDirectory").getValue());
 				}
-				if (xpp3DomConfiguration.getChild("attributes") != null && xpp3DomConfiguration.getChild("attributes").getChild("stylesheet") != null) {
-					configuration.setStylesheetPath(xpp3DomConfiguration.getChild("attributes").getChild("stylesheet").getValue());
+				if (xpp3DomConfiguration.getChild("attributes") != null
+						&& xpp3DomConfiguration.getChild("attributes").getChild("stylesheet") != null) {
+					configuration.setStylesheetPath(
+							xpp3DomConfiguration.getChild("attributes").getChild("stylesheet").getValue());
 				}
 			}
 		}
 
 		if (antCopyPlugin != null) {
 			PluginExecution pluginExecution = null;
-			for (Iterator<PluginExecution> iterator = antCopyPlugin.getExecutions().iterator(); iterator.hasNext() && pluginExecution == null;) {
+			for (Iterator<PluginExecution> iterator = antCopyPlugin.getExecutions().iterator(); iterator.hasNext()
+					&& pluginExecution == null;) {
 				PluginExecution temp = iterator.next();
 				if (temp.getGoals().contains("run")) {
 					pluginExecution = temp;
@@ -158,13 +177,14 @@ public class AsciidocConfiguration {
 				if (xpp3DomConfiguration.getChild("target") != null) {
 					if (xpp3DomConfiguration.getChild("target").getChild("copy") != null) {
 						if (xpp3DomConfiguration.getChild("target").getChild("copy").getChild("fileset") != null) {
-							configuration.setResourcesPath(xpp3DomConfiguration.getChild("target").getChild("copy").getChild("fileset").getAttribute("dir"));
+							configuration.setResourcesPath(xpp3DomConfiguration.getChild("target").getChild("copy")
+									.getChild("fileset").getAttribute("dir"));
 						}
 					}
 				}
 			}
 		}
-		return configuration;
+		return true;
 	}
 
 }
