@@ -11,6 +11,7 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
  * @author mvanbesien (mvaawl@gmail.com)
  *
  */
+//http://www.ibm.com/developerworks/library/os-ecca/
 public class AsciidocAssistProcessor implements IContentAssistProcessor {
 
 	@Override
