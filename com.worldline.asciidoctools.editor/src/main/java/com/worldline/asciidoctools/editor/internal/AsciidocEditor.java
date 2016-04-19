@@ -24,6 +24,7 @@ package com.worldline.asciidoctools.editor.internal;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -33,6 +34,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -50,10 +52,12 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ContentAssistAction;
 
 import com.worldline.asciidoctools.builder.AsciidocBuilderListener;
 import com.worldline.asciidoctools.builder.AsciidocBuilderListeners;
 import com.worldline.asciidoctools.builder.AsciidocConfiguration;
+import com.worldline.asciidoctools.editor.internal.assist.AsciidocSourceViewerConfiguration;
 
 /**
  * 
@@ -87,6 +91,7 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		this.editorInput = input;
 		super.init(site, input);
+		setSourceViewerConfiguration(new AsciidocSourceViewerConfiguration(getPreferenceStore()));
 		AsciidocBuilderListeners.INSTANCE.register(this);
 	}
 
@@ -115,13 +120,15 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		this.browser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changing(LocationEvent event) {
-				if (((Browser) event.getSource()).getUrl() != null && !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
+				if (((Browser) event.getSource()).getUrl() != null
+						&& !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
 					try {
 						URI realFileURI = new File(getDestinationFile().getLocation().toString()).toURI();
 						URI expectedFileURI = URI.create(event.location);
 						event.doit = realFileURI.getPath().equals(expectedFileURI.getPath());
 					} catch (Exception e) {
-						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+						Activator.getDefault().getLog()
+								.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 					}
 				}
 			}
@@ -251,7 +258,7 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 			AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(file.getProject());
 			if (configuration != null) {
 				return findMatchingFile(configuration, file);
-				}
+			}
 		}
 		return null;
 	}
@@ -275,7 +282,8 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 						}
 					}
 				} catch (CoreException e) {
-					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+					Activator.getDefault().getLog()
+							.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 				}
 			}
 		}
@@ -303,5 +311,16 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 				refreshBrowser(targetFile);
 			}
 		}
+	}
+
+	@Override
+	protected void createActions() {
+		super.createActions();
+		IAction action = new ContentAssistAction(ResourceBundle.getBundle("AsciidocEditorAction"), "ContentAssistProposal.", this); 
+		String id = Activator.PLUGIN_ID.concat(".contentassist");
+		action.setActionDefinitionId(id);
+		setAction("ContentAssistProposal", action); 
+		markAsStateDependentAction("ContentAssistProposal", true);
+		setActionActivationCode(id, ' ', -1, SWT.CTRL);
 	}
 }
