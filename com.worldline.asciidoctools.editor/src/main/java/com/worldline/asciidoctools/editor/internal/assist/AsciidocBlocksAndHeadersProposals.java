@@ -8,14 +8,17 @@ import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 public enum AsciidocBlocksAndHeadersProposals {
-	TITLE_LEVEL1_COMPLETION("Addition of 1st level title", "= "),
-	TITLE_LEVEL2_COMPLETION("Addition of 2nd level title", "== "),
-	TITLE_LEVEL3_COMPLETION("Addition of 3rd level title", "=== "),
-	SEPARATOR_COMPLETION("Addition of separator", "\n''''\n\n"),
-	PASSTHROUGH_COMPLETION("Addition of passthrough block", "\n++++\n\n++++\n", 6),
-	QUOTE_COMPLETION("Addition of quote block", "\n____\n\n____\n", 6),
-	LITERAL_COMPLETION("Addition of literal block", "\n....\n\n....\n", 6),
-	SOURCE_COMPLETION("Addition of source block", "\n----\n\n----\n", 6)
+	TITLE_LEVEL1_COMPLETION("New 1st level title", "= "),
+	TITLE_LEVEL2_COMPLETION("New 2nd level title", "== "),
+	TITLE_LEVEL3_COMPLETION("New 3rd level title", "=== "),
+	SEPARATOR_COMPLETION("New separator", "\n''''\n\n"),
+	PASSTHROUGH_COMPLETION("New passthrough block", "\n++++\n\n++++\n", 6),
+	QUOTE_COMPLETION("New quote", "\n____\n\n____\n", 6),
+	LITERAL_COMPLETION("New literal block", "\n....\n\n....\n", 6),
+	SOURCE_COMPLETION("New source block", "\n----\n\n----\n", 6),
+	LIST_COMPLETION("New list", "\n\n* \n* \n* \n", 4),
+	NUMBERED_LIST_COMPLETION("New numbered list","\n\n. \n. \n. \n ", 4),
+	TABLE_COMPLETION("New table", "[]\n|===\n||\n||\n|===", 9);
 	;
 
 	private final String message;
