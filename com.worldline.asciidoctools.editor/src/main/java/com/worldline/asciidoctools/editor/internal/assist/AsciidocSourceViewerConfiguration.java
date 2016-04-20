@@ -22,7 +22,7 @@ public class AsciidocSourceViewerConfiguration extends TextSourceViewerConfigura
 	@Override
 	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 		ContentAssistant contentAssistant = new ContentAssistant();
-		IContentAssistProcessor processor = new AsciidocAssistProcessor();
+		IContentAssistProcessor processor = new AsciidocContentAssistProcessor();
 		contentAssistant.setContentAssistProcessor(processor, IDocument.DEFAULT_CONTENT_TYPE);
 		return contentAssistant;
 	}
