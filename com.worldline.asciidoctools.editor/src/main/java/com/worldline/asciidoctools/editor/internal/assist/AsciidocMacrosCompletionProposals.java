@@ -7,23 +7,24 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
-public enum AsciidocCompletionProposals {
-	LINK_COMPLETION("link:/path/to/link[] - Addition of link", "link:[]", "link:",
-			5), IMAGE_COMPLETION("image:/path/to/image[] - Addition of image", "image:[]", "image:", 6);
+public enum AsciidocMacrosCompletionProposals {
+	LINK_COMPLETION("link:/path/to/link[] - Addition of link", "link:[]", "link:",5),
+	IMAGE_COMPLETION("image:/path/to/image[] - Addition of image", "image:[]", "image:", 6),
+	MAILTO_COMPLETION("mailto:aaa@bbb.com[] - Addition of mailto link", "mailto:[]", "image:", 7);
 
 	private final String message;
 	private final String contents;
 	private final int cursor;
 	private final String trigger;
 
-	private AsciidocCompletionProposals(String message, String contents, String trigger, int cursor) {
+	private AsciidocMacrosCompletionProposals(String message, String contents, String trigger, int cursor) {
 		this.message = message;
 		this.contents = contents;
 		this.cursor = cursor;
 		this.trigger = trigger;
 	}
 
-	private AsciidocCompletionProposals(String message, String contents, String trigger) {
+	private AsciidocMacrosCompletionProposals(String message, String contents, String trigger) {
 		this(message, contents, trigger, contents.length());
 	}
 
@@ -40,11 +41,11 @@ public enum AsciidocCompletionProposals {
 			String start) {
 		Collection<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
 		if ("".equals(start)) {
-			for (AsciidocCompletionProposals proposalElement : AsciidocCompletionProposals.values()) {
+			for (AsciidocMacrosCompletionProposals proposalElement : AsciidocMacrosCompletionProposals.values()) {
 				proposals.add(proposalElement.toCompletionProposal(document, offset));
 			}
 		} else {
-			for (AsciidocCompletionProposals proposalElement : AsciidocCompletionProposals.values()) {
+			for (AsciidocMacrosCompletionProposals proposalElement : AsciidocMacrosCompletionProposals.values()) {
 				if (proposalElement.trigger.startsWith(start)) {
 					proposals.add(proposalElement.toCompletionProposal(document, offset, start.length()));
 				}

@@ -22,12 +22,16 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 	@Override
 	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
 		Collection<ICompletionProposal> results = new ArrayList<ICompletionProposal>();
+		IDocument document = viewer.getDocument();
+
 		if (viewer.getSelectedRange().y == 0) {
+			if (isCurrentLineStart(document, offset)) {
+				results.addAll(AsciidocBlocksAndHeadersProposals.getValidCompletionProposals(document, offset));
+			}
 			try {
-				IDocument document = viewer.getDocument();
 				int position = getCurrentWordStart(document, offset);
 				String start = document.get(position, offset - position);
-				results.addAll(AsciidocCompletionProposals.getValidCompletionProposals(document, offset, start));
+				results.addAll(AsciidocMacrosCompletionProposals.getValidCompletionProposals(document, offset, start));
 			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
@@ -38,7 +42,6 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 	}
 
 	private int getCurrentWordStart(IDocument document, int offset) {
-
 		for (int i = offset - 1; i > 0; i--) {
 			try {
 				char c = document.getChar(i);
@@ -49,6 +52,17 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 			}
 		}
 		return -1;
+	}
+
+	private boolean isCurrentLineStart(IDocument document, int offset) {
+		try {
+			int lineOfOffset = document.getLineOfOffset(offset);
+			int lineOffset = document.getLineOffset(lineOfOffset);
+			return offset == lineOffset;
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
