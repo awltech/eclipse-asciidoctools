@@ -27,10 +27,7 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 				IDocument document = viewer.getDocument();
 				int position = getCurrentWordStart(document, offset);
 				String start = document.get(position, offset - position);
-				if ("".equals(start)) {
-					results.add(AsciidocCompletionProposals.LINK_COMPLETION.toCompletionProposal(document, offset));
-					results.add(AsciidocCompletionProposals.IMAGE_COMPLETION.toCompletionProposal(document, offset));
-				}
+				results.addAll(AsciidocCompletionProposals.getValidCompletionProposals(document, offset, start));
 			} catch (BadLocationException e) {
 				e.printStackTrace();
 			}
