@@ -12,21 +12,28 @@ public enum AsciidocBlocksAndHeadersProposals {
 	TITLE_LEVEL2_COMPLETION("Addition of 2nd level title", "== "),
 	TITLE_LEVEL3_COMPLETION("Addition of 3rd level title", "=== "),
 	SEPARATOR_COMPLETION("Addition of separator", "\n''''\n\n"),
-	PASSTHROUGH_COMPLETION(" Addition of passthrough block", "\n++++\n++++\n"),
-	QUOTE_COMPLETION(" Addition of quote block", "\n____\n____\n"),
-	LITERAL_COMPLETION(" Addition of literal block", "\n....\n....\n"),
+	PASSTHROUGH_COMPLETION("Addition of passthrough block", "\n++++\n\n++++\n", 6),
+	QUOTE_COMPLETION("Addition of quote block", "\n____\n\n____\n", 6),
+	LITERAL_COMPLETION("Addition of literal block", "\n....\n\n....\n", 6),
+	SOURCE_COMPLETION("Addition of source block", "\n----\n\n----\n", 6)
 	;
 
 	private final String message;
 	private final String contents;
+	private final int cursor;
 
-	private AsciidocBlocksAndHeadersProposals(String message, String contents) {
+	private AsciidocBlocksAndHeadersProposals(String message, String contents, int cursor) {
 		this.message = message;
 		this.contents = contents;
+		this.cursor = cursor;
+	}
+	
+	private AsciidocBlocksAndHeadersProposals(String message, String contents) {
+		this(message, contents, contents.length());
 	}
 
 	public ICompletionProposal toCompletionProposal(IDocument document, int offset) {
-		return new CompletionProposal(this.contents, offset, 0, this.contents.length(), null,
+		return new CompletionProposal(this.contents, offset, 0, this.cursor, null,
 				this.message, null, this.message);
 	}
 
