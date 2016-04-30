@@ -15,9 +15,9 @@ import com.worldline.asciidoctools.editor.internal.Activator;
  *
  */
 public enum AsciidocMacrosCompletionProposals {
-	LINK_COMPLETION("link:/path/to/link[] - Addition of link", "link:[]", "link:",5),
-	IMAGE_COMPLETION("image:/path/to/image[] - Addition of image", "image:[]", "image:", 6),
-	MAILTO_COMPLETION("mailto:aaa@bbb.com[] - Addition of mailto link", "mailto:[]", "image:", 7);
+	LINK_COMPLETION("link:[] - Add link", "link:[]", "link:",5),
+	IMAGE_COMPLETION("image:[] - Add image", "image:[]", "image:", 6),
+	MAILTO_COMPLETION("mailto:[] - Add mailto link", "mailto:[]", "image:", 7);
 
 	private final String message;
 	private final String contents;

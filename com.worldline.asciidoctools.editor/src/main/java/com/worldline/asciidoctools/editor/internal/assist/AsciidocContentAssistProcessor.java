@@ -25,14 +25,14 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 		IDocument document = viewer.getDocument();
 
 		if (viewer.getSelectedRange().y == 0) {
-			if (isCurrentLineStart(document, offset)) {
-				results.addAll(AsciidocBlocksAndHeadersProposals.getValidCompletionProposals(document, offset));
-			}
 			try {
 				int position = getCurrentWordStart(document, offset);
 				String start = document.get(position, offset - position);
 				results.addAll(AsciidocVariablesProposals.getValidCompletionProposals(document, offset, start));
 				results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
+				if (isCurrentLineStart(document, offset)) {
+					results.addAll(AsciidocBlocksAndHeadersProposals.getValidCompletionProposals(document, offset));
+				}
 				results.addAll(AsciidocMacrosCompletionProposals.getValidCompletionProposals(document, offset, start));
 			} catch (BadLocationException e) {
 				e.printStackTrace();

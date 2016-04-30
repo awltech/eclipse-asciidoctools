@@ -15,19 +15,19 @@ import com.worldline.asciidoctools.editor.internal.Activator;
  *
  */
 public enum AsciidocBlocksAndHeadersProposals {
-	VARIABLE_COMPLETION("New variable", ":: ", 1),
-	TITLE_LEVEL1_COMPLETION("New 1st level title", "= "),
-	TITLE_LEVEL2_COMPLETION("New 2nd level title", "== "),
-	TITLE_LEVEL3_COMPLETION("New 3rd level title", "=== "),
-	SEPARATOR_COMPLETION("New separator", "\n''''\n\n"),
-	ANCHOR_COMPLETION("New anchor", "[[]]", 2),
-	PASSTHROUGH_COMPLETION("New passthrough block", "\n++++\n\n++++\n", 6),
-	QUOTE_COMPLETION("New quote", "\n____\n\n____\n", 6),
-	LITERAL_COMPLETION("New literal block", "\n....\n\n....\n", 6),
-	SOURCE_COMPLETION("New source block", "\n----\n\n----\n", 6),
-	LIST_COMPLETION("New list", "\n\n* \n* \n* \n", 4),
-	NUMBERED_LIST_COMPLETION("New numbered list","\n\n. \n. \n. \n ", 4),
-	TABLE_COMPLETION("New table", "[]\n|===\n||\n||\n|===", 9)
+	VARIABLE_COMPLETION(":: - Add variable", ":: ", 1),
+	TITLE_LEVEL1_COMPLETION("= - Add 1st level title", "= "),
+	TITLE_LEVEL2_COMPLETION("== - Add 2nd level title", "== "),
+	TITLE_LEVEL3_COMPLETION("=== - Add 3rd level title", "=== "),
+	SEPARATOR_COMPLETION("'''' - Add separator", "\n''''\n\n"),
+	ANCHOR_COMPLETION("[[]] - Add anchor", "[[]]", 2),
+	PASSTHROUGH_COMPLETION("++++ - Add passthrough block", "\n++++\n\n++++\n", 6),
+	QUOTE_COMPLETION("____ - Add quote", "\n____\n\n____\n", 6),
+	LITERAL_COMPLETION(".... - Add literal block", "\n....\n\n....\n", 6),
+	SOURCE_COMPLETION("---- - Add source block", "\n----\n\n----\n", 6),
+	LIST_COMPLETION("* - Add list", "\n\n* \n* \n* \n", 4),
+	NUMBERED_LIST_COMPLETION(". - Add numbered list","\n\n. \n. \n. \n ", 4),
+	TABLE_COMPLETION("|=== - Add table", "[]\n|===\n||\n||\n|===", 9)
 	;
 
 	private final String message;
