@@ -7,12 +7,15 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+import com.worldline.asciidoctools.editor.internal.Activator;
+
 /**
  * 
  * @author mvanbesien (mvaawl@gmail.com)
  *
  */
 public enum AsciidocBlocksAndHeadersProposals {
+	VARIABLE_COMPLETION("New variable", ":: ", 1),
 	TITLE_LEVEL1_COMPLETION("New 1st level title", "= "),
 	TITLE_LEVEL2_COMPLETION("New 2nd level title", "== "),
 	TITLE_LEVEL3_COMPLETION("New 3rd level title", "=== "),
@@ -42,7 +45,7 @@ public enum AsciidocBlocksAndHeadersProposals {
 	}
 
 	public ICompletionProposal toCompletionProposal(IDocument document, int offset) {
-		return new CompletionProposal(this.contents, offset, 0, this.cursor, null,
+		return new CompletionProposal(this.contents, offset, 0, this.cursor, Activator.getDefault().getImage("/icons/completion-block.png"),
 				this.message, null, this.message);
 	}
 

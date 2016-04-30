@@ -7,6 +7,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+import com.worldline.asciidoctools.editor.internal.Activator;
+
 /**
  * 
  * @author mvanbesien (mvaawl@gmail.com)
@@ -34,7 +36,8 @@ public enum AsciidocMacrosCompletionProposals {
 	}
 
 	public ICompletionProposal toCompletionProposal(IDocument document, int offset, int replacement) {
-		return new CompletionProposal(this.contents.substring(replacement), offset, 0, this.cursor - replacement, null,
+		return new CompletionProposal(this.contents.substring(replacement), offset, 0, this.cursor - replacement,
+				Activator.getDefault().getImage("/icons/completion-block.png"),
 				this.message, null, this.message);
 	}
 

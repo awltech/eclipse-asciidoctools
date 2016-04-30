@@ -8,6 +8,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+import com.worldline.asciidoctools.editor.internal.Activator;
+
 /**
  * 
  * @author mvanbesien (mvaawl@gmail.com)
@@ -53,6 +55,6 @@ public class AsciidocAnchorsProposals {
 			String variable) {
 		String replacementString = "<<" + variable + ",>>";
 		return new CompletionProposal(replacementString, offset - replacement, replacement,
-				replacementString.length() - 2, null, replacementString + " - Add link to anchor", null, null);
+				replacementString.length() - 2, Activator.getDefault().getImage("/icons/completion-gotoanchor.png"), replacementString + " - Add link to anchor", null, null);
 	}
 }

@@ -8,6 +8,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+import com.worldline.asciidoctools.editor.internal.Activator;
+
 /**
  * 
  * @author mvanbesien (mvaawl@gmail.com)
@@ -53,6 +55,6 @@ public class AsciidocVariablesProposals {
 			String variable) {
 		String replacementString = "{" + variable + "}";
 		return new CompletionProposal(replacementString, offset - replacement, replacement,
-				replacementString.length(), null, replacementString + " - Add variable to document", null, null);
+				replacementString.length(), Activator.getDefault().getImage("/icons/completion-variable.png"), replacementString + " - Add variable to document", null, null);
 	}
 }
