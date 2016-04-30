@@ -12,13 +12,14 @@ public enum AsciidocBlocksAndHeadersProposals {
 	TITLE_LEVEL2_COMPLETION("New 2nd level title", "== "),
 	TITLE_LEVEL3_COMPLETION("New 3rd level title", "=== "),
 	SEPARATOR_COMPLETION("New separator", "\n''''\n\n"),
+	ANCHOR_COMPLETION("New anchor", "[[]]", 2),
 	PASSTHROUGH_COMPLETION("New passthrough block", "\n++++\n\n++++\n", 6),
 	QUOTE_COMPLETION("New quote", "\n____\n\n____\n", 6),
 	LITERAL_COMPLETION("New literal block", "\n....\n\n....\n", 6),
 	SOURCE_COMPLETION("New source block", "\n----\n\n----\n", 6),
 	LIST_COMPLETION("New list", "\n\n* \n* \n* \n", 4),
 	NUMBERED_LIST_COMPLETION("New numbered list","\n\n. \n. \n. \n ", 4),
-	TABLE_COMPLETION("New table", "[]\n|===\n||\n||\n|===", 9);
+	TABLE_COMPLETION("New table", "[]\n|===\n||\n||\n|===", 9)
 	;
 
 	private final String message;
