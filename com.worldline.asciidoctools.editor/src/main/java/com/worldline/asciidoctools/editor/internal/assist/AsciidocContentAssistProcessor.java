@@ -32,6 +32,7 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 				int position = getCurrentWordStart(document, offset);
 				String start = document.get(position, offset - position);
 				results.addAll(AsciidocVariablesProposals.getValidCompletionProposals(document, offset, start));
+				results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
 				results.addAll(AsciidocMacrosCompletionProposals.getValidCompletionProposals(document, offset, start));
 			} catch (BadLocationException e) {
 				e.printStackTrace();
