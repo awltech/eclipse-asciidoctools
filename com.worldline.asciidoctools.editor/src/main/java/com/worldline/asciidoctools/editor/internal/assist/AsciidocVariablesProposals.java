@@ -8,6 +8,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+/**
+ * 
+ * @author mvanbesien (mvaawl@gmail.com)
+ *
+ */
 public class AsciidocVariablesProposals {
 
 	public static Collection<ICompletionProposal> getValidCompletionProposals(IDocument document, int offset,

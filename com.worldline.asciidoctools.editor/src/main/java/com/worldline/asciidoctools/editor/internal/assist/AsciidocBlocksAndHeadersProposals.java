@@ -7,6 +7,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+/**
+ * 
+ * @author mvanbesien (mvaawl@gmail.com)
+ *
+ */
 public enum AsciidocBlocksAndHeadersProposals {
 	TITLE_LEVEL1_COMPLETION("New 1st level title", "= "),
 	TITLE_LEVEL2_COMPLETION("New 2nd level title", "== "),

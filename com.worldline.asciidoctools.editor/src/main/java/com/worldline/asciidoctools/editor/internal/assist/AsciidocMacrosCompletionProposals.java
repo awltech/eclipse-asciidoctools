@@ -7,6 +7,11 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
+/**
+ * 
+ * @author mvanbesien (mvaawl@gmail.com)
+ *
+ */
 public enum AsciidocMacrosCompletionProposals {
 	LINK_COMPLETION("link:/path/to/link[] - Addition of link", "link:[]", "link:",5),
 	IMAGE_COMPLETION("image:/path/to/image[] - Addition of image", "image:[]", "image:", 6),
