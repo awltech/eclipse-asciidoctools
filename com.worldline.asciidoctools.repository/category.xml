@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.worldline.asciidoctools.feature_0.2.0.qualifier.jar" id="com.worldline.asciidoctools.feature" version="0.2.0.qualifier">
+   <feature url="features/com.worldline.asciidoctools.feature_0.3.0.qualifier.jar" id="com.worldline.asciidoctools.feature" version="0.3.0.qualifier">
       <category name="Asciidoc Tools"/>
    </feature>
    <category-def name="Asciidoc Tools" label="Asciidoc Tools"/>
