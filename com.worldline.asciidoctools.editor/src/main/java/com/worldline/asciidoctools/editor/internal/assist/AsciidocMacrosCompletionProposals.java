@@ -16,7 +16,7 @@ import com.worldline.asciidoctools.editor.internal.ComparableCompletionProposal;
  */
 public enum AsciidocMacrosCompletionProposals {
 	LINK_COMPLETION("link:[] - Add link", "link:[]", "link:", 5), IMAGE_COMPLETION("image:[] - Add image", "image:[]", "image:",
-			6), MAILTO_COMPLETION("mailto:[] - Add mailto link", "mailto:[]", "image:", 7);
+			6), MAILTO_COMPLETION("mailto:[] - Add mailto link", "mailto:[]", "mailto:", 7);
 
 	private final String message;
 	private final String contents;
