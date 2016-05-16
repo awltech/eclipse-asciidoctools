@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 import com.worldline.asciidoctools.editor.internal.Activator;
+import com.worldline.asciidoctools.editor.internal.ComparableCompletionProposal;
 
 /**
  * 
@@ -15,9 +15,8 @@ import com.worldline.asciidoctools.editor.internal.Activator;
  *
  */
 public enum AsciidocMacrosCompletionProposals {
-	LINK_COMPLETION("link:[] - Add link", "link:[]", "link:",5),
-	IMAGE_COMPLETION("image:[] - Add image", "image:[]", "image:", 6),
-	MAILTO_COMPLETION("mailto:[] - Add mailto link", "mailto:[]", "image:", 7);
+	LINK_COMPLETION("link:[] - Add link", "link:[]", "link:", 5), IMAGE_COMPLETION("image:[] - Add image", "image:[]", "image:",
+			6), MAILTO_COMPLETION("mailto:[] - Add mailto link", "mailto:[]", "image:", 7);
 
 	private final String message;
 	private final String contents;
@@ -35,19 +34,17 @@ public enum AsciidocMacrosCompletionProposals {
 		this(message, contents, trigger, contents.length());
 	}
 
-	public ICompletionProposal toCompletionProposal(IDocument document, int offset, int replacement) {
-		return new CompletionProposal(this.contents.substring(replacement), offset, 0, this.cursor - replacement,
-				Activator.getDefault().getImage("/icons/completion-block.png"),
-				this.message, null, this.message);
+	public ComparableCompletionProposal toCompletionProposal(IDocument document, int offset, int replacement, int priority) {
+		return new ComparableCompletionProposal(new CompletionProposal(this.contents.substring(replacement), offset, 0, this.cursor - replacement,
+				Activator.getDefault().getImage("/icons/completion-block.png"), this.message, null, this.message), priority);
 	}
 
-	public ICompletionProposal toCompletionProposal(IDocument document, int offset) {
-		return toCompletionProposal(document, offset, 0);
+	public ComparableCompletionProposal toCompletionProposal(IDocument document, int offset) {
+		return toCompletionProposal(document, offset, 0, 0);
 	}
 
-	public static Collection<ICompletionProposal> getValidCompletionProposals(IDocument document, int offset,
-			String start) {
-		Collection<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
+	public static Collection<ComparableCompletionProposal> getValidCompletionProposals(IDocument document, int offset, String start) {
+		Collection<ComparableCompletionProposal> proposals = new ArrayList<ComparableCompletionProposal>();
 		if ("".equals(start)) {
 			for (AsciidocMacrosCompletionProposals proposalElement : AsciidocMacrosCompletionProposals.values()) {
 				proposals.add(proposalElement.toCompletionProposal(document, offset));
@@ -55,7 +52,7 @@ public enum AsciidocMacrosCompletionProposals {
 		} else {
 			for (AsciidocMacrosCompletionProposals proposalElement : AsciidocMacrosCompletionProposals.values()) {
 				if (proposalElement.trigger.startsWith(start)) {
-					proposals.add(proposalElement.toCompletionProposal(document, offset, start.length()));
+					proposals.add(proposalElement.toCompletionProposal(document, offset, start.length(), start.length()));
 				}
 			}
 		}

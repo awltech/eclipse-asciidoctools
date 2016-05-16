@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 import com.worldline.asciidoctools.editor.internal.Activator;
+import com.worldline.asciidoctools.editor.internal.ComparableCompletionProposal;
 
 /**
  * 
@@ -15,20 +15,19 @@ import com.worldline.asciidoctools.editor.internal.Activator;
  *
  */
 public enum AsciidocBlocksAndHeadersProposals {
-	VARIABLE_COMPLETION(":: - Add variable", ":: ", 1),
-	TITLE_LEVEL1_COMPLETION("= - Add 1st level title", "= "),
+	VARIABLE_COMPLETION(":: - Add variable", ":: ", 1), 
+	TITLE_LEVEL1_COMPLETION("= - Add 1st level title", "= "), 
 	TITLE_LEVEL2_COMPLETION("== - Add 2nd level title", "== "),
-	TITLE_LEVEL3_COMPLETION("=== - Add 3rd level title", "=== "),
-	SEPARATOR_COMPLETION("'''' - Add separator", "\n''''\n\n"),
+	TITLE_LEVEL3_COMPLETION("=== - Add 3rd level title","=== "), 
+	SEPARATOR_COMPLETION("'''' - Add separator", "\n''''\n\n"), 
 	ANCHOR_COMPLETION("[[]] - Add anchor", "[[]]", 2),
 	PASSTHROUGH_COMPLETION("++++ - Add passthrough block", "\n++++\n\n++++\n", 6),
 	QUOTE_COMPLETION("____ - Add quote", "\n____\n\n____\n", 6),
-	LITERAL_COMPLETION(".... - Add literal block", "\n....\n\n....\n", 6),
-	SOURCE_COMPLETION("---- - Add source block", "\n----\n\n----\n", 6),
+	LITERAL_COMPLETION(".... - Add literal block", "\n....\n\n....\n", 6), 
+	SOURCE_COMPLETION("---- - Add source block", "\n----\n\n----\n", 6), 
 	LIST_COMPLETION("* - Add list", "\n\n* \n* \n* \n", 4),
-	NUMBERED_LIST_COMPLETION(". - Add numbered list","\n\n. \n. \n. \n ", 4),
-	TABLE_COMPLETION("|=== - Add table", "[]\n|===\n||\n||\n|===", 9)
-	;
+	NUMBERED_LIST_COMPLETION(". - Add numbered list", "\n\n. \n. \n. \n ", 4),
+	TABLE_COMPLETION("|=== - Add table", "[]\n|===\n||\n||\n|===", 9);
 
 	private final String message;
 	private final String contents;
@@ -39,18 +38,18 @@ public enum AsciidocBlocksAndHeadersProposals {
 		this.contents = contents;
 		this.cursor = cursor;
 	}
-	
+
 	private AsciidocBlocksAndHeadersProposals(String message, String contents) {
 		this(message, contents, contents.length());
 	}
 
-	public ICompletionProposal toCompletionProposal(IDocument document, int offset) {
-		return new CompletionProposal(this.contents, offset, 0, this.cursor, Activator.getDefault().getImage("/icons/completion-block.png"),
-				this.message, null, this.message);
+	public ComparableCompletionProposal toCompletionProposal(IDocument document, int offset) {
+		return new ComparableCompletionProposal(new CompletionProposal(this.contents, offset, 0, this.cursor,
+				Activator.getDefault().getImage("/icons/completion-block.png"), this.message, null, this.message), 1);
 	}
 
-	public static Collection<ICompletionProposal> getValidCompletionProposals(IDocument document, int offset) {
-		Collection<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
+	public static Collection<ComparableCompletionProposal> getValidCompletionProposals(IDocument document, int offset) {
+		Collection<ComparableCompletionProposal> proposals = new ArrayList<ComparableCompletionProposal>();
 		for (AsciidocBlocksAndHeadersProposals proposalElement : AsciidocBlocksAndHeadersProposals.values()) {
 			proposals.add(proposalElement.toCompletionProposal(document, offset));
 		}

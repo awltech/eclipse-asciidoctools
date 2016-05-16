@@ -1,15 +1,17 @@
 package com.worldline.asciidoctools.editor.internal.assist;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+
+import com.worldline.asciidoctools.editor.internal.ComparableCompletionProposal;
 
 /**
  * 
@@ -20,8 +22,8 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 
 	@Override
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
-		Collection<ICompletionProposal> results = new ArrayList<ICompletionProposal>();
+	public ComparableCompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
+		List<ComparableCompletionProposal> results = new ArrayList<ComparableCompletionProposal>();
 		IDocument document = viewer.getDocument();
 
 		if (viewer.getSelectedRange().y == 0) {
@@ -29,8 +31,8 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 				int position = getCurrentWordStart(document, offset);
 				String start = document.get(position, offset - position);
 				results.addAll(AsciidocVariablesProposals.getValidCompletionProposals(document, offset, start));
-				results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
 				if (isCurrentLineStart(document, offset)) {
+					results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
 					results.addAll(AsciidocBlocksAndHeadersProposals.getValidCompletionProposals(document, offset));
 				}
 				results.addAll(AsciidocMacrosCompletionProposals.getValidCompletionProposals(document, offset, start));
@@ -40,7 +42,8 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 		} else {
 
 		}
-		return results.toArray(new ICompletionProposal[0]);
+		Collections.sort(results);
+		return results.toArray(new ComparableCompletionProposal[0]);
 	}
 
 	private int getCurrentWordStart(IDocument document, int offset) {

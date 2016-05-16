@@ -6,9 +6,9 @@ import java.util.Collection;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 import com.worldline.asciidoctools.editor.internal.Activator;
+import com.worldline.asciidoctools.editor.internal.ComparableCompletionProposal;
 
 /**
  * 
@@ -17,13 +17,12 @@ import com.worldline.asciidoctools.editor.internal.Activator;
  */
 public class AsciidocVariablesProposals {
 
-	public static Collection<ICompletionProposal> getValidCompletionProposals(IDocument document, int offset,
-			String start) {
-		Collection<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
+	public static Collection<ComparableCompletionProposal> getValidCompletionProposals(IDocument document, int offset, String start) {
+		Collection<ComparableCompletionProposal> proposals = new ArrayList<ComparableCompletionProposal>();
 		if (start.endsWith("{")) {
 			proposals.addAll(getMatchingVariables(document, "{", offset));
 		} else if (start.indexOf("{") > -1) {
-			proposals.addAll(getMatchingVariables(document, start.substring(start.indexOf("{")), offset));
+			proposals.addAll(getMatchingVariables(document, start.substring(start.lastIndexOf("{")), offset));
 		} else {
 			proposals.addAll(getMatchingVariables(document, "", offset));
 		}
@@ -31,9 +30,9 @@ public class AsciidocVariablesProposals {
 		return proposals;
 	}
 
-	private static Collection<ICompletionProposal> getMatchingVariables(IDocument document, String prefix, int offset) {
-		 String realPrefix = prefix.startsWith("{") ? prefix.substring(1) : prefix;
-		 Collection<ICompletionProposal> proposals = new ArrayList<ICompletionProposal>();
+	private static Collection<ComparableCompletionProposal> getMatchingVariables(IDocument document, String prefix, int offset) {
+		String realPrefix = prefix.startsWith("{") ? prefix.substring(1) : prefix;
+		Collection<ComparableCompletionProposal> proposals = new ArrayList<ComparableCompletionProposal>();
 		for (int i = 0; i < document.getNumberOfLines(); i++) {
 			try {
 				String line = document.get(document.getLineOffset(i), document.getLineLength(i));
@@ -51,10 +50,10 @@ public class AsciidocVariablesProposals {
 		return proposals;
 	}
 
-	public static ICompletionProposal toCompletionProposal(IDocument document, int offset, int replacement,
-			String variable) {
+	public static ComparableCompletionProposal toCompletionProposal(IDocument document, int offset, int replacement, String variable) {
 		String replacementString = "{" + variable + "}";
-		return new CompletionProposal(replacementString, offset - replacement, replacement,
-				replacementString.length(), Activator.getDefault().getImage("/icons/completion-variable.png"), replacementString + " - Add variable to document", null, null);
+		return new ComparableCompletionProposal(new CompletionProposal(replacementString, offset - replacement, replacement,
+				replacementString.length(), Activator.getDefault().getImage("/icons/completion-variable.png"),
+				replacementString + " - Add variable to document", null, null), replacement);
 	}
 }
