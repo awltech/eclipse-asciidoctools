@@ -32,8 +32,10 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 				String start = document.get(position, offset - position);
 				results.addAll(AsciidocVariablesProposals.getValidCompletionProposals(document, offset, start));
 				if (isCurrentLineStart(document, offset)) {
-					results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
 					results.addAll(AsciidocBlocksAndHeadersProposals.getValidCompletionProposals(document, offset));
+				}
+				if (isCurrentLineStart(document, offset) || lineStartsWith(document, offset, "<<")) {
+					results.addAll(AsciidocAnchorsProposals.getValidCompletionProposals(document, offset, start));
 				}
 				results.addAll(AsciidocMacrosCompletionProposals.getValidCompletionProposals(document, offset, start));
 			} catch (BadLocationException e) {
@@ -44,6 +46,19 @@ public class AsciidocContentAssistProcessor implements IContentAssistProcessor {
 		}
 		Collections.sort(results);
 		return results.toArray(new ComparableCompletionProposal[0]);
+	}
+
+	private boolean lineStartsWith(IDocument document, int offset, String string) {
+		try {
+			int lineOfOffset = document.getLineOfOffset(offset);
+			int lineOffset = document.getLineOffset(lineOfOffset);
+			if (lineOffset < offset) {
+				return document.get(lineOffset, offset).trim().startsWith(string);	
+			}
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	private int getCurrentWordStart(IDocument document, int offset) {
