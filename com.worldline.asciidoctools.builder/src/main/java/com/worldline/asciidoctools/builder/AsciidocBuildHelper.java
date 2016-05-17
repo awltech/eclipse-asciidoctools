@@ -30,7 +30,7 @@ public final class AsciidocBuildHelper {
 	private AsciidocBuildHelper() {
 	}
 
-	public static IProject[] fullBuild(IProject project, IProgressMonitor monitor) throws CoreException, IOException {
+	public static void fullBuild(IProject project, IProgressMonitor monitor) throws CoreException, IOException {
 		AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(project);
 		IFolder resourcesFolder = project.getFolder(new Path(configuration.getResourcesPath()));
 		IFolder sourcesFolder = project.getFolder(new Path(configuration.getSourcesPath()));
@@ -49,7 +49,6 @@ public final class AsciidocBuildHelper {
 		monitor.subTask("Refreshing target folder...");
 		targetFolder.refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());
 
-		return new IProject[0];
 	}
 
 	private static void generate(IFolder sourcesFolder, Set<IFile> sourceFiles, IFolder targetFolder, AsciidocConfiguration configuration,
@@ -115,10 +114,11 @@ public final class AsciidocBuildHelper {
 		}
 	}
 
-	public static IProject[] incrementalBuild(IProject project, IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
+	public static void incrementalBuild(IProject project, IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
 		AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(project);
 		if (delta == null) {
-			return fullBuild(project, monitor);
+			fullBuild(project, monitor);
+			return;
 		}
 
 		IFolder resourcesFolder = project.getFolder(new Path(configuration.getResourcesPath()));
@@ -133,7 +133,26 @@ public final class AsciidocBuildHelper {
 		generate(sourcesFolder, visitor.getSourceFiles(), targetFolder, configuration, monitor);
 		monitor.subTask("Refreshing target folder...");
 
-		return new IProject[0];
+	}
+	
+	public static void filesBuild(IProject project, Set<IFile> resourcesToBuild, IProgressMonitor monitor) throws CoreException, IOException {
+		AsciidocConfiguration configuration = AsciidocConfiguration.getConfiguration(project);
+
+		IFolder resourcesFolder = project.getFolder(new Path(configuration.getResourcesPath()));
+		IFolder sourcesFolder = project.getFolder(new Path(configuration.getSourcesPath()));
+		IFolder targetFolder = project.getFolder(new Path(configuration.getTargetPath()));
+
+		monitor.subTask("Locating resources to process...");
+		
+		AsciidocResourceVisitor visitor = new AsciidocResourceVisitor(sourcesFolder, resourcesFolder);
+		for (IFile file : resourcesToBuild) {
+			visitor.processFile(file);
+		}
+
+		copy(resourcesFolder, visitor.getResourceFiles(), targetFolder, monitor);
+		generate(sourcesFolder, visitor.getSourceFiles(), targetFolder, configuration, monitor);
+		monitor.subTask("Refreshing target folder...");
+
 	}
 
 	private static void mkdirs(IFolder folder) throws CoreException {

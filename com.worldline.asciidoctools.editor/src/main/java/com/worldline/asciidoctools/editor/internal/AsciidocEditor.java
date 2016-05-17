@@ -22,8 +22,10 @@
 package com.worldline.asciidoctools.editor.internal;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -31,6 +33,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
@@ -46,6 +49,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -54,6 +58,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.ContentAssistAction;
 
+import com.worldline.asciidoctools.builder.AsciidocBuildHelper;
 import com.worldline.asciidoctools.builder.AsciidocBuilderListener;
 import com.worldline.asciidoctools.builder.AsciidocBuilderListeners;
 import com.worldline.asciidoctools.builder.AsciidocConfiguration;
@@ -120,15 +125,13 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		this.browser.addLocationListener(new LocationAdapter() {
 			@Override
 			public void changing(LocationEvent event) {
-				if (((Browser) event.getSource()).getUrl() != null
-						&& !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
+				if (((Browser) event.getSource()).getUrl() != null && !"about:blank".equals(((Browser) event.getSource()).getUrl())) {
 					try {
 						URI realFileURI = new File(getDestinationFile().getLocation().toString()).toURI();
 						URI expectedFileURI = URI.create(event.location);
 						event.doit = realFileURI.getPath().equals(expectedFileURI.getPath());
 					} catch (Exception e) {
-						Activator.getDefault().getLog()
-								.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 					}
 				}
 			}
@@ -282,8 +285,7 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 						}
 					}
 				} catch (CoreException e) {
-					Activator.getDefault().getLog()
-							.log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
+					Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 				}
 			}
 		}
@@ -316,11 +318,35 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 	@Override
 	protected void createActions() {
 		super.createActions();
-		IAction action = new ContentAssistAction(ResourceBundle.getBundle("AsciidocEditorAction"), "ContentAssistProposal.", this); 
+		IAction action = new ContentAssistAction(ResourceBundle.getBundle("AsciidocEditorAction"), "ContentAssistProposal.", this);
 		String id = Activator.PLUGIN_ID.concat(".contentassist");
 		action.setActionDefinitionId(id);
-		setAction("ContentAssistProposal", action); 
+		setAction("ContentAssistProposal", action);
 		markAsStateDependentAction("ContentAssistProposal", true);
 		setActionActivationCode(id, ' ', -1, SWT.CTRL);
+	}
+
+	@Override
+	public void doSave(final IProgressMonitor progressMonitor) {
+		super.doSave(progressMonitor);
+		if (this.editorInput instanceof IFileEditorInput) {
+			IFileEditorInput input = (IFileEditorInput) this.editorInput;
+			final IFile file = input.getFile();
+			Display.getCurrent().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						AsciidocBuildHelper.filesBuild(file.getProject(), Collections.singleton(file), progressMonitor);
+						onBuild(file);
+					} catch (CoreException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Error while rebuilding file", e));
+					} catch (IOException e) {
+						Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, "Error while rebuilding file", e));
+					}
+				}
+			});
+
+		}
+
 	}
 }

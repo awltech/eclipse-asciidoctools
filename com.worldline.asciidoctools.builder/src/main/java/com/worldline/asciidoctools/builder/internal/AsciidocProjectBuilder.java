@@ -50,8 +50,11 @@ public class AsciidocProjectBuilder extends IncrementalProjectBuilder {
 		}
 
 		try {
-			return kind == IncrementalProjectBuilder.FULL_BUILD ? AsciidocBuildHelper.fullBuild(getProject(), monitor)
-					: AsciidocBuildHelper.incrementalBuild(getProject(), getDelta(getProject()), monitor);
+			if (kind == IncrementalProjectBuilder.FULL_BUILD) {
+				AsciidocBuildHelper.fullBuild(getProject(), monitor);
+			} else {
+				AsciidocBuildHelper.incrementalBuild(getProject(), getDelta(getProject()), monitor);
+			}
 		} catch (Exception e) {
 			Activator.getDefault().getLog().log(new Status(IStatus.ERROR, Activator.PLUGIN_ID, e.getMessage(), e));
 		}

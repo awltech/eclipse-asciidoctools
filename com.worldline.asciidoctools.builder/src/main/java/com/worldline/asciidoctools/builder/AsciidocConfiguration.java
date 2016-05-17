@@ -104,7 +104,7 @@ public class AsciidocConfiguration {
 
 	private String backend = BACKEND_DEFAULT;
 
-	private AsciidocConfigurationSource source = AsciidocConfigurationSource.MAVEN;
+	private AsciidocConfigurationSource source = null;
 
 	public String getBackend() {
 		return backend;
@@ -152,20 +152,20 @@ public class AsciidocConfiguration {
 		CachedAsciidocConfiguration cachedAsciidocConfiguration = AsciidocConfiguration.cache.get(project);
 		if (cachedAsciidocConfiguration == null) {
 			AsciidocConfiguration configuration = newConfiguration(project);
-			cache.put(project, new CachedAsciidocConfiguration(configuration));
-			System.out.println("Configuration created into cache because was null.");
-			return configuration;
+			if (configuration != null) {
+				cache.put(project, new CachedAsciidocConfiguration(configuration));
+				return configuration;
+			}
+			return new AsciidocConfiguration();
 		}
 
 		// Check if outdated
 		if (isOutdated(project, cachedAsciidocConfiguration)) {
 			AsciidocConfiguration configuration = newConfiguration(project);
 			cache.put(project, new CachedAsciidocConfiguration(configuration));
-			System.out.println("Configuration created into cache because outdated.");
 			return configuration;
 		}
 
-		System.out.println("Configuration returned from cache.");
 		return cachedAsciidocConfiguration.configuration;
 	}
 
@@ -276,15 +276,15 @@ public class AsciidocConfiguration {
 
 	private static boolean updateConfigurationFromMaven(AsciidocConfiguration configuration, IProject project) {
 		// Get the asciidoc configuration
-		IMavenProjectFacade MavenProjectFacade = MavenPlugin.getMavenProjectRegistry().getProject(project);
-		if (MavenProjectFacade == null) {
+		IMavenProjectFacade mavenProjectFacade = MavenPlugin.getMavenProjectRegistry().getProject(project);
+		if (mavenProjectFacade == null) {
 			return false;
 		}
 
 		Plugin asciidocPlugin = null;
 		Plugin antCopyPlugin = null;
-		if (MavenProjectFacade != null && MavenProjectFacade.getMavenProject() != null) {
-			Model model = MavenProjectFacade.getMavenProject().getModel();
+		if (mavenProjectFacade != null && mavenProjectFacade.getMavenProject() != null) {
+			Model model = mavenProjectFacade.getMavenProject().getModel();
 			if (model.getBuild() != null) {
 				for (Iterator<Plugin> iterator = model.getBuild().getPlugins().iterator(); iterator.hasNext()
 						&& (asciidocPlugin == null || antCopyPlugin == null);) {
@@ -348,8 +348,10 @@ public class AsciidocConfiguration {
 				}
 			}
 		}
-		configuration.source = AsciidocConfigurationSource.MAVEN;
-		return true;
+		if (asciidocPlugin != null) {
+			configuration.source = AsciidocConfigurationSource.MAVEN;
+		}
+		return asciidocPlugin != null;
 	}
 
 }
