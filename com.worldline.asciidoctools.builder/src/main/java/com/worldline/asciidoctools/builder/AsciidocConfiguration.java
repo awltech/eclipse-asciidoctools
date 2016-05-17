@@ -22,7 +22,9 @@
 package com.worldline.asciidoctools.builder;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.maven.model.Model;
@@ -45,14 +47,32 @@ import com.worldline.asciidoctools.builder.internal.Activator;
 
 /**
  * 
- * Asciidoc Project Configuration pojo. Contains information about the
- * source/resources location, where to put generated doc etc...
+ * Asciidoc Project Configuration pojo. Contains information about the source/resources location, where to put generated
+ * doc etc...
  * 
  * @author mvanbesien <mvaawl@gmail.com>
  * @since 0.1
  *
  */
 public class AsciidocConfiguration {
+
+	private static final Map<IProject, CachedAsciidocConfiguration> cache = new HashMap<IProject, CachedAsciidocConfiguration>();
+
+	private static final class CachedAsciidocConfiguration {
+
+		private final long cachedTime;
+
+		private final AsciidocConfiguration configuration;
+
+		public CachedAsciidocConfiguration(AsciidocConfiguration configuration) {
+			this.cachedTime = System.currentTimeMillis();
+			this.configuration = configuration;
+		}
+	}
+
+	private static enum AsciidocConfigurationSource {
+		MAVEN, PROPERTIES, SETTINGS;
+	}
 
 	private static final String TARGETPATH_DEFAULT = "target/generated-docs";
 
@@ -83,6 +103,8 @@ public class AsciidocConfiguration {
 	private String stylesheetPath = STYLESHEETPATH_DEFAULT;
 
 	private String backend = BACKEND_DEFAULT;
+
+	private AsciidocConfigurationSource source = AsciidocConfigurationSource.MAVEN;
 
 	public String getBackend() {
 		return backend;
@@ -125,6 +147,49 @@ public class AsciidocConfiguration {
 	}
 
 	public static AsciidocConfiguration getConfiguration(IProject project) {
+
+		// Check if exists
+		CachedAsciidocConfiguration cachedAsciidocConfiguration = AsciidocConfiguration.cache.get(project);
+		if (cachedAsciidocConfiguration == null) {
+			AsciidocConfiguration configuration = newConfiguration(project);
+			cache.put(project, new CachedAsciidocConfiguration(configuration));
+			System.out.println("Configuration created into cache because was null.");
+			return configuration;
+		}
+
+		// Check if outdated
+		if (isOutdated(project, cachedAsciidocConfiguration)) {
+			AsciidocConfiguration configuration = newConfiguration(project);
+			cache.put(project, new CachedAsciidocConfiguration(configuration));
+			System.out.println("Configuration created into cache because outdated.");
+			return configuration;
+		}
+
+		System.out.println("Configuration returned from cache.");
+		return cachedAsciidocConfiguration.configuration;
+	}
+
+	private static boolean isOutdated(IProject project, CachedAsciidocConfiguration cachedAsciidocConfiguration) {
+		if (cachedAsciidocConfiguration.configuration.source == AsciidocConfigurationSource.MAVEN) {
+			IFile file = project.getFile("pom.xml");
+			if (file != null && file.exists()) {
+				return file.getLocalTimeStamp() > cachedAsciidocConfiguration.cachedTime;
+			}
+			return true;
+		} else if (cachedAsciidocConfiguration.configuration.source == AsciidocConfigurationSource.PROPERTIES) {
+			IFile file = getFileFromList(project, "asciidoctools.properties", "conf/asciidoctools.properties");
+			if (file != null && file.exists()) {
+				return file.getLocalTimeStamp() > cachedAsciidocConfiguration.cachedTime;
+			}
+			return true;
+		} else if (cachedAsciidocConfiguration.configuration.source == AsciidocConfigurationSource.SETTINGS) {
+			return true;
+		} else {
+			return true;
+		}
+	}
+
+	private static AsciidocConfiguration newConfiguration(IProject project) {
 		AsciidocConfiguration configuration = new AsciidocConfiguration();
 		if (!updateConfigurationFromMaven(configuration, project)) {
 			if (!updateConfigurationFromProperties(configuration, project)) {
@@ -173,6 +238,7 @@ public class AsciidocConfiguration {
 		configuration.setStylesheetPath(stylesheetPath);
 		configuration.setTargetPath(targetPath);
 
+		configuration.source = AsciidocConfigurationSource.PROPERTIES;
 		return true;
 	}
 
@@ -204,6 +270,7 @@ public class AsciidocConfiguration {
 			Activator.getDefault().getLog().log(new Status(IStatus.WARNING, Activator.PLUGIN_ID, e.getMessage(), e));
 			return false;
 		}
+		configuration.source = AsciidocConfigurationSource.SETTINGS;
 		return true;
 	}
 
@@ -281,6 +348,7 @@ public class AsciidocConfiguration {
 				}
 			}
 		}
+		configuration.source = AsciidocConfigurationSource.MAVEN;
 		return true;
 	}
 
