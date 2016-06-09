@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Asciidoc builder
+Bundle-Name: AsciidocTools Project Builder
 Bundle-SymbolicName: com.worldline.asciidoctools.builder;singleton:=true
 Bundle-Version: 0.2.1.qualifier
 Bundle-Activator: com.worldline.asciidoctools.builder.internal.Activator
-Bundle-Vendor: Worldline
+Bundle-Vendor: Worldline.com
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

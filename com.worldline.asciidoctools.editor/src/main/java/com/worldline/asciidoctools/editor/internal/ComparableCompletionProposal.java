@@ -27,6 +27,11 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 
+/**
+ * 
+ * @author mvanbesien (mvaawl@gmail.com)
+ *
+ */
 public class ComparableCompletionProposal implements ICompletionProposal, Comparable<ComparableCompletionProposal> {
 
 	private final ICompletionProposal original;

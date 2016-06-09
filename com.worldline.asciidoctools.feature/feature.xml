@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="com.worldline.asciidoctools.feature"
-      label="Asciidoc Tools"
+      label="Eclipse AsciidocTools"
       version="0.2.1.qualifier"
       provider-name="Worldline.com">
 
