@@ -39,12 +39,17 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationAdapter;
 import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
@@ -195,6 +200,37 @@ public class AsciidocEditor extends TextEditor implements AsciidocBuilderListene
 		this.refreshLayout();
 		this.refreshBrowser(getDestinationFile());
 
+		// Workaround to find : disable the Ctrl+I binding for this editor ?
+		// Add bold/italic shortcuts.
+		this.getSourceViewer().getTextWidget().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == 'b' && (e.stateMask & SWT.CTRL) != 0) {
+					toggleMarker(getSourceViewer(), "*");
+				}
+				if (e.keyCode == 't' && (e.stateMask & SWT.CTRL) != 0) {
+					toggleMarker(getSourceViewer(), "_");
+				}
+			}
+			
+			private boolean toggleMarker(ISourceViewer sourceViewer, String marker) {
+				try {
+					Point selectedRange = sourceViewer.getSelectedRange();
+					String selection = sourceViewer.getDocument().get(selectedRange.x, selectedRange.y);
+					String previous = sourceViewer.getDocument().get(selectedRange.x - 1, 1).trim();
+					String next = sourceViewer.getDocument().get(selectedRange.x + selectedRange.y, 1).trim();
+					if (previous.endsWith(marker) && next.startsWith(marker)) {
+						sourceViewer.getDocument().replace(selectedRange.x - 1, selectedRange.y + 2, selection);
+					} else {
+						sourceViewer.getDocument().replace(selectedRange.x, selectedRange.y, marker + selection + marker);
+					}
+					return true;
+				} catch (BadLocationException ble) {
+					ble.printStackTrace();
+				}
+				return false;
+			}
+		});
 	}
 
 	public void refreshLayout() {
